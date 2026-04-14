@@ -6,7 +6,7 @@
     <title>NEXUS STORE 💎</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* --- ESTILOS GENERALES Y RESET --- */
+        /* --- ESTILOS GENERALES --- */
         * {
             margin: 0;
             padding: 0;
@@ -15,13 +15,12 @@
         }
 
         body {
-            background-color: #050505; /* Fondo negro profundo */
+            background-color: #050505;
             color: white;
             overflow-x: hidden;
             scroll-behavior: smooth;
         }
 
-        /* --- COLORES NEÓN Y VARIABLES --- */
         :root {
             --neon-orange: #ff6600;
             --neon-orange-glow: rgba(255, 102, 0, 0.8);
@@ -31,10 +30,9 @@
             --neon-green: #00ff88;
             --neon-gold: #ffcc00;
             --neon-whatsapp: #25d366;
-            --tiktok-link: 'https://tiktok.com/@softworks32'; /* URL de TikTok para usar en JS */
         }
 
-        /* --- ANIMACIÓN DE ENTRADA (INTRO) --- */
+        /* --- ANIMACIÓN DE ENTRADA (OPTIMIZADA) --- */
         #intro-screen {
             position: fixed;
             top: 0;
@@ -46,11 +44,11 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            animation: fadeOutIntro 1s ease-in 6s forwards; /* Salida al final */
+            animation: fadeOutIntro 0.8s ease-in 6.2s forwards;
         }
 
         .intro-text-wrapper {
-            perspective: 1000px; /* Para efecto 3D */
+            perspective: 1000px;
             text-align: center;
         }
 
@@ -62,15 +60,14 @@
             display: inline-block;
             position: relative;
             transform-style: preserve-3d;
+            /* SE AGREGA ESTO PARA EVITAR LAG */
+            will-change: transform, opacity;
             animation: text3D 7s ease-in-out forwards;
         }
 
         .intro-text .line1 {
             color: var(--neon-orange);
-            text-shadow: 
-                0 0 10px var(--neon-orange-glow),
-                0 0 20px var(--neon-orange-glow),
-                0 0 40px var(--neon-orange-glow);
+            text-shadow: 0 0 10px var(--neon-orange-glow), 0 0 30px var(--neon-orange-glow);
             animation: typingLine1 2s steps(6) 0.5s forwards, glowOrange 1.5s ease-in-out infinite alternate 2.5s;
             width: 0;
             overflow: hidden;
@@ -88,34 +85,40 @@
             display: block;
         }
 
-        /* Animaciones para el intro */
-                @keyframes text3D {
-            0% { 
-                transform: translateZ(-500px) rotateX(90deg) scale(0.5); 
-                opacity: 0; 
-            }
-            15% { 
-                transform: translateZ(0) rotateX(0deg) scale(1); 
-                opacity: 1; 
-            }
-            80% { 
-                transform: translateZ(0) rotateX(0deg) scale(1.05); 
-                opacity: 1; 
-            }
+        @keyframes typingLine1 { to { width: 100%; } }
+        @keyframes typingLine2 { to { width: 100%; } }
+
+        /* CORRECCIÓN DE LAG: Usamos scale en lugar de font-size */
+        @keyframes text3D {
+            0% { transform: translateZ(-500px) rotateX(90deg) scale(0.5); opacity: 0; }
+            15% { transform: translateZ(0) rotateX(0deg) scale(1); opacity: 1; }
+            80% { transform: translateZ(0) rotateX(0deg) scale(1.05); opacity: 1; }
             100% { 
-                /* Esta es la parte clave para que no haya lag */
-                transform: translateZ(300px) scale(4); 
+                transform: translateZ(400px) scale(5); 
                 opacity: 0; 
-                filter: blur(15px); 
+                filter: blur(15px);
                 visibility: hidden;
             }
-                }
-        
-        
+        }
+
+        @keyframes glowOrange {
+            from { text-shadow: 0 0 10px var(--neon-orange-glow), 0 0 20px var(--neon-orange-glow); }
+            to { text-shadow: 0 0 20px var(--neon-orange-glow), 0 0 40px var(--neon-orange-glow), 0 0 60px var(--neon-orange-glow); }
+        }
+
+        @keyframes glowPurple {
+            from { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+            to { text-shadow: 0 0 20px var(--neon-purple-glow), 0 0 40px var(--neon-purple-glow); color: var(--neon-purple); }
+        }
+
+        @keyframes fadeOutIntro {
+            to { opacity: 0; visibility: hidden; }
+        }
+
         /* --- PÁGINA PRINCIPAL --- */
         #main-content {
             opacity: 0;
-            animation: fadeInMain 1s ease-out 6.5s forwards;
+            animation: fadeInMain 1s ease-out 6.8s forwards;
             padding: 40px 20px;
             display: flex;
             flex-direction: column;
@@ -124,216 +127,80 @@
 
         @keyframes fadeInMain { to { opacity: 1; } }
 
-        /* HEADER */
-        header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
+        header { text-align: center; margin-bottom: 50px; }
+        header h1 { font-size: 3.5rem; text-transform: uppercase; text-shadow: 0 0 20px var(--neon-purple-glow); }
+        header h1 span { color: var(--neon-purple); }
+        header p { font-size: 1.2rem; color: #ccc; margin-top: 10px; }
 
-        header h1 {
-            font-size: 3.5rem;
-            text-transform: uppercase;
-            color: #fff;
-            text-shadow: 0 0 20px var(--neon-purple-glow);
-            margin-bottom: 10px;
-        }
-
-        header h1 span {
-            color: var(--neon-purple);
-        }
-
-        header p {
-            font-size: 1.2rem;
-            color: #ccc;
-            margin-bottom: 10px;
-        }
-
-        header ul {
-            list-style: none;
-            color: #aaa;
-            font-size: 1rem;
-        }
-
-        /* WHATSAPP SECTION */
-        .whatsapp-section {
-            text-align: center;
-            margin-bottom: 60px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .whatsapp-title {
-            font-size: 1.5rem;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
+        .whatsapp-section { text-align: center; margin-bottom: 60px; }
         .whatsapp-btn {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
+            width: 100px; height: 100px; border-radius: 50%;
             background-color: var(--neon-whatsapp);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 4rem;
-            color: white;
-            text-decoration: none;
-            box-shadow: 0 0 30px rgba(37, 211, 102, 0.5);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: inline-flex; justify-content: center; align-items: center;
+            font-size: 3.5rem; color: white; text-decoration: none;
+            box-shadow: 0 0 30px rgba(37, 211, 102, 0.4);
+            transition: 0.3s; margin-top: 15px;
         }
+        .whatsapp-btn:hover { transform: scale(1.1); box-shadow: 0 0 50px var(--neon-whatsapp); }
 
-        .whatsapp-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 50px rgba(37, 211, 102, 0.8);
-        }
-
-        /* PRECIOS GRID */
+        /* TARJETAS DE PRECIOS */
         .pricing-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            width: 100%;
-            max-width: 1200px;
+            gap: 25px; width: 100%; max-width: 1200px;
         }
 
-        /* CUADROS DE PRECIO ESTILO GENERAL */
         .price-card {
-            background: rgba(20, 20, 20, 0.8);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 20px; padding: 35px;
+            text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: 0.3s;
         }
+        .price-card:hover { transform: translateY(-10px); }
 
-        .price-card:hover {
-            transform: translateY(-10px);
-        }
+        .card-duration { font-size: 1.8rem; font-weight: bold; margin-bottom: 5px; }
+        .card-price { font-size: 2.5rem; font-weight: bold; margin-bottom: 20px; }
+        .card-features { list-style: none; text-align: left; margin-bottom: 25px; color: #bbb; line-height: 1.8; }
 
-        .card-duration {
-            font-size: 1.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .card-price {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 25px;
-        }
-
-        .card-features {
-            list-style: none;
-            text-align: left;
-            margin-bottom: 30px;
-            color: #ccc;
-            font-size: 1.1rem;
-            line-height: 1.8;
-        }
-
-        .card-features li::before {
-            content: "🟢 ";
-        }
-
-        /* BOTÓN COMPRAR */
         .buy-btn {
-            background: none;
-            border: 2px solid;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-radius: 50px;
-            color: white;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.3s ease, box-shadow 0.3s ease;
+            background: none; border: 2px solid; padding: 12px;
+            width: 100%; border-radius: 50px; color: white;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
         }
 
-        /* COLORES ESPECÍFICOS POR TARJETA */
-
-        /* 1 DÍA - AZUL */
-        .card-blue {
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
-        }
-        .card-blue:hover { box-shadow: 0 0 30px rgba(0, 210, 255, 0.5); }
-        .card-blue .card-duration, .card-blue .card-price { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 210, 255, 0.5); }
+        /* COLORES DE TARJETAS */
+        .card-blue { border-color: var(--neon-blue); }
+        .card-blue .card-duration, .card-blue .card-price { color: var(--neon-blue); }
         .card-blue .buy-btn { border-color: var(--neon-blue); }
-        .card-blue .buy-btn:hover { background-color: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); }
+        .card-blue .buy-btn:hover { background: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); }
 
-        /* 7 DÍAS - VERDE */
-        .card-green {
-            border-color: var(--neon-green);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
-        }
-        .card-green:hover { box-shadow: 0 0 30px rgba(0, 255, 136, 0.5); }
-        .card-green .card-duration, .card-green .card-price { color: var(--neon-green); text-shadow: 0 0 10px rgba(0, 255, 136, 0.5); }
+        .card-green { border-color: var(--neon-green); }
+        .card-green .card-duration, .card-green .card-price { color: var(--neon-green); }
         .card-green .buy-btn { border-color: var(--neon-green); }
-        .card-green .buy-btn:hover { background-color: var(--neon-green); box-shadow: 0 0 20px var(--neon-green); }
+        .card-green .buy-btn:hover { background: var(--neon-green); box-shadow: 0 0 20px var(--neon-green); }
 
-        /* 15 DÍAS - MORADO */
-        .card-purple {
-            border-color: var(--neon-purple);
-            box-shadow: 0 0 15px rgba(157, 0, 255, 0.2);
-        }
-        .card-purple:hover { box-shadow: 0 0 30px rgba(157, 0, 255, 0.5); }
-        .card-purple .card-duration, .card-purple .card-price { color: var(--neon-purple); text-shadow: 0 0 10px rgba(157, 0, 255, 0.5); }
+        .card-purple { border-color: var(--neon-purple); }
+        .card-purple .card-duration, .card-purple .card-price { color: var(--neon-purple); }
         .card-purple .buy-btn { border-color: var(--neon-purple); }
-        .card-purple .buy-btn:hover { background-color: var(--neon-purple); box-shadow: 0 0 20px var(--neon-purple); }
+        .card-purple .buy-btn:hover { background: var(--neon-purple); box-shadow: 0 0 20px var(--neon-purple); }
 
-        /* 1 MES - DORADO */
-        .card-gold {
-            border-color: var(--neon-gold);
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
-        }
-        .card-gold:hover { box-shadow: 0 0 30px rgba(255, 204, 0, 0.5); }
-        .card-gold .card-duration, .card-gold .card-price { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
+        .card-gold { border-color: var(--neon-gold); }
+        .card-gold .card-duration, .card-gold .card-price { color: var(--neon-gold); }
         .card-gold .buy-btn { border-color: var(--neon-gold); }
-        .card-gold .buy-btn:hover { background-color: var(--neon-gold); box-shadow: 0 0 20px var(--neon-gold); }
+        .card-gold .buy-btn:hover { background: var(--neon-gold); box-shadow: 0 0 20px var(--neon-gold); }
 
-
-        /* TOAST NOTIFICATION (Para feedback al copiar) */
         #toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 10px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1001; /* Encima de todo */
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%);
-            border: 1px solid var(--neon-purple);
-            box-shadow: 0 0 15px var(--neon-purple-glow);
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            visibility: hidden; position: fixed; bottom: 30px; left: 50%;
+            transform: translateX(-50%); background: #1a1a1a; padding: 15px 25px;
+            border-radius: 10px; border: 1px solid var(--neon-purple); z-index: 2000;
+            opacity: 0; transition: 0.5s; text-align: center;
         }
+        #toast.show { visibility: visible; opacity: 1; }
 
-        #toast.show {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        /* RESPONSIVE */
         @media (max-width: 600px) {
-            .intro-text { font-size: 2.5rem; }
+            header h1 { font-size: 2.2rem; }
+            .intro-text { font-size: 2.8rem; }
             .intro-text .line2 { font-size: 2rem; }
-            header h1 { font-size: 2.5rem; }
-            .pricing-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -351,144 +218,95 @@
     <div id="main-content">
         <header>
             <h1>NEXUS <span>STORE</span> 👑</h1>
-            <p>Tu mejor opción, precios económicos</p>
-            <ul>
-                <li>Descuentos y más</li>
-            </ul>
+            <p>Tu mejor opción precios económicos</p>
+            <p style="font-size: 0.9rem; color: #888;">Descuentos y más</p>
         </header>
 
         <section class="whatsapp-section">
-            <h2 class="whatsapp-title">Canal de WhatsApp <br> Descuentos y más 🔥</h2>
+            <h2 style="font-size: 1.1rem; letter-spacing: 1px;">CANAL DE WHATSAPP DESCUENTOS Y MÁS 🔥</h2>
             <a href="https://whatsapp.com/channel/0029VbC12x4GufIzNYfrPh3R" target="_blank" class="whatsapp-btn">
                 <i class="fab fa-whatsapp"></i>
             </a>
         </section>
 
         <section class="pricing-grid">
-
             <div class="price-card card-blue">
-                <div>
-                    <div class="card-duration">1 DÍA</div>
-                    <div class="card-price">$ 2 USD</div>
-                    <ul class="card-features">
-                        <li>Acceso 24 horas</li>
-                        <li>Entrega inmediata</li>
-                    </ul>
-                </div>
-                <button class="buy-btn" onclick="handleBuyClick('1 DÍA')">COMPRAR 💳</button>
+                <div class="card-duration">1 DÍA</div>
+                <div class="card-price">$ 2 USD</div>
+                <ul class="card-features">
+                    <li>🟢 Acceso 24 horas</li>
+                    <li>🟢 Entrega inmediata</li>
+                </ul>
+                <button class="buy-btn" onclick="comprar('1 DÍA')">COMPRAR 💳</button>
             </div>
 
             <div class="price-card card-green">
-                <div>
-                    <div class="card-duration">7 DÍAS</div>
-                    <div class="card-price">$ 7 USD</div>
-                    <ul class="card-features">
-                        <li>Soporte standard</li>
-                        <li>Actualizaciones</li>
-                        <li>Entrega inmediata</li>
-                    </ul>
-                </div>
-                <button class="buy-btn" onclick="handleBuyClick('7 DÍAS')">COMPRAR 💳</button>
+                <div class="card-duration">7 DÍAS</div>
+                <div class="card-price">$ 7 USD</div>
+                <ul class="card-features">
+                    <li>🟢 Soporte standard</li>
+                    <li>🟢 Actualizaciones</li>
+                    <li>🟢 Entrega inmediata</li>
+                </ul>
+                <button class="buy-btn" onclick="comprar('7 DÍAS')">COMPRAR 💳</button>
             </div>
 
             <div class="price-card card-purple">
-                <div>
-                    <div class="card-duration">15 DÍAS</div>
-                    <div class="card-price">$ 12 USD</div>
-                    <ul class="card-features">
-                        <li>Soporte 24/7</li>
-                        <li>Actualizaciones inmediatas</li>
-                        <li>Entrega inmediata</li>
-                    </ul>
-                </div>
-                <button class="buy-btn" onclick="handleBuyClick('15 DÍAS')">COMPRAR 💳</button>
+                <div class="card-duration">15 DÍAS</div>
+                <div class="card-price">$ 12 USD</div>
+                <ul class="card-features">
+                    <li>🟢 Soporte 24/7</li>
+                    <li>🟢 Actualizaciones inmediatas</li>
+                    <li>🟢 Entrega inmediata</li>
+                </ul>
+                <button class="buy-btn" onclick="comprar('15 DÍAS')">COMPRAR 💳</button>
             </div>
 
             <div class="price-card card-gold">
-                <div>
-                    <div class="card-duration">1 MES</div>
-                    <div class="card-price">$ 18 USD</div>
-                    <ul class="card-features">
-                        <li>Soporte prioritario</li>
-                        <li>Actualizaciones constantes</li>
-                        <li>Acceso completo</li>
-                        <li>Entrega inmediata</li>
-                    </ul>
-                </div>
-                <button class="buy-btn" onclick="handleBuyClick('1 MES')">COMPRAR 💳</button>
+                <div class="card-duration">1 MES</div>
+                <div class="card-price">$ 18 USD</div>
+                <ul class="card-features">
+                    <li>🟢 Soporte prioritario</li>
+                    <li>🟢 Actualizaciones constantes</li>
+                    <li>🟢 Acceso completo</li>
+                    <li>🟢 Entrega inmediata</li>
+                </ul>
+                <button class="buy-btn" onclick="comprar('1 MES')">COMPRAR 💳</button>
             </div>
-
         </section>
     </div>
 
-    <div id="toast">Mensaje copiado al portapapeles.<br>Redirigiendo a TikTok...</div>
+    <div id="toast">Copiado: Quiero adquirir drip cliente🟣...<br>Redirigiendo a TikTok</div>
 
     <script>
-        // URL de TikTok definida en una variable global para fácil acceso
-        const tiktokUrl = 'https://tiktok.com/@softworks32';
+        function comprar(paquete) {
+            const texto = `Quiero adquirir drip cliente🟣 de el paquete que eligió: ${paquete}`;
+            const tiktok = "https://tiktok.com/@softworks32";
 
-        function handleBuyClick(planName) {
-            // 1. Copiar el mensaje personalizado al portapapeles
-            const messageToCopy = `Quiero adquirir drip cliente🟣 de el paquete que eligió: ${planName}`;
-            copyTextToClipboard(messageToCopy);
-        }
-
-        async function copyTextToClipboard(text) {
-            if (!navigator.clipboard) {
-                // Fallback para navegadores antiguos
-                const textArea = document.createElement("textarea");
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                try {
-                    const successful = document.execCommand('copy');
-                    if (successful) {
-                        onCopySuccess();
-                    } else {
-                        onCopyFailure();
-                    }
-                } catch (err) {
-                    onCopyFailure();
-                }
-                document.body.removeChild(textArea);
-                return;
-            }
-            // API del portapapeles moderna
-            try {
-                await navigator.clipboard.writeText(text);
-                onCopySuccess();
-            } catch (err) {
-                onCopyFailure();
+            // Copiar al portapapeles
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(texto).then(() => {
+                    finalizarCompra(tiktok);
+                });
+            } else {
+                const area = document.createElement("textarea");
+                area.value = texto;
+                document.body.appendChild(area);
+                area.select();
+                document.execCommand("copy");
+                document.body.removeChild(area);
+                finalizarCompra(tiktok);
             }
         }
 
-        function onCopySuccess() {
-            // 2. Mostrar la notificación visual (Toast)
-            showToast();
-            // 3. Redirigir a TikTok después de un breve retraso
-            setTimeout(redirectToTikTok, 1500); // 1.5 segundos de retraso
-        }
-
-        function onCopyFailure() {
-            // En caso de error, intentar la redirección de todos modos
-            console.error('No se pudo copiar el texto al portapapeles.');
-            showToast(); // Mostrar toast con mensaje genérico de error si se desea
-            setTimeout(redirectToTikTok, 1000);
-        }
-
-        function showToast() {
+        function finalizarCompra(link) {
             const toast = document.getElementById("toast");
-            toast.className = "show";
-            // El toast se oculta automáticamente con CSS, pero podemos asegurarnos aquí si es necesario
-            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
-        }
-
-        function redirectToTikTok() {
-            // Abrir TikTok en una pestaña nueva
-            window.open(tiktokUrl, '_blank');
+            toast.classList.add("show");
+            setTimeout(() => {
+                window.open(link, "_blank");
+                toast.classList.remove("show");
+            }, 1500);
         }
     </script>
-
 </body>
 </html>
