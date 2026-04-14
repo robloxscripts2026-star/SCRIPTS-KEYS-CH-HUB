@@ -6,211 +6,193 @@
     <title>NEXUS STORE 💎</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* --- ESTILOS GENERALES --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        /* --- BASE Y RAYOS DE FONDO --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', Courier, monospace; }
 
         body {
-            background-color: #050505;
+            background-color: #08000f; /* Morado casi negro */
             color: white;
             overflow-x: hidden;
-            scroll-behavior: smooth;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(157, 0, 255, 0.1) 0%, transparent 80%),
+                linear-gradient(rgba(157, 0, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(157, 0, 255, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 50px 50px, 50px 50px;
+        }
+
+        /* EFECTO DE RAYOS/TRUENOS */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(157, 0, 255, 0.03);
+            pointer-events: none;
+            animation: lightning 4s steps(1) infinite;
+            z-index: 999;
+        }
+
+        @keyframes lightning {
+            0%, 95%, 98% { opacity: 0; }
+            96%, 99% { opacity: 1; background: rgba(255, 255, 255, 0.1); }
         }
 
         :root {
+            --neon-purple: #bc13fe;
+            --neon-purple-glow: #d21ff3;
             --neon-orange: #ff6600;
-            --neon-orange-glow: rgba(255, 102, 0, 0.8);
-            --neon-purple: #9d00ff;
-            --neon-purple-glow: rgba(157, 0, 255, 0.8);
             --neon-blue: #00d2ff;
             --neon-green: #00ff88;
             --neon-gold: #ffcc00;
-            --neon-whatsapp: #25d366;
         }
 
-        /* --- ANIMACIÓN DE ENTRADA (OPTIMIZADA) --- */
+        /* --- INTRO TECNOLÓGICO (5-7 segundos) --- */
         #intro-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            animation: fadeOutIntro 0.8s ease-in 6.2s forwards;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background: #000;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 10000;
+            animation: fadeOut 1s ease forwards 6.5s;
         }
 
-        .intro-text-wrapper {
-            perspective: 1000px;
+        .intro-content {
             text-align: center;
+            perspective: 1000px;
         }
 
         .intro-text {
-            font-size: 4rem;
-            font-weight: bold;
-            color: #fff;
+            font-size: 4.5rem;
+            font-weight: 900;
             text-transform: uppercase;
-            display: inline-block;
-            position: relative;
-            transform-style: preserve-3d;
-            /* SE AGREGA ESTO PARA EVITAR LAG */
+            letter-spacing: 10px;
             will-change: transform, opacity;
-            animation: text3D 7s ease-in-out forwards;
+            animation: techIntro 7s ease-in-out forwards;
         }
 
-        .intro-text .line1 {
+        .line-nexus {
             color: var(--neon-orange);
-            text-shadow: 0 0 10px var(--neon-orange-glow), 0 0 30px var(--neon-orange-glow);
-            animation: typingLine1 2s steps(6) 0.5s forwards, glowOrange 1.5s ease-in-out infinite alternate 2.5s;
-            width: 0;
-            overflow: hidden;
-            white-space: nowrap;
-            display: block;
+            text-shadow: 0 0 20px var(--neon-orange), 0 0 40px var(--neon-orange);
+            width: 0; overflow: hidden; white-space: nowrap; display: block;
+            animation: typing 2s steps(10) 0.5s forwards;
         }
 
-        .intro-text .line2 {
-            font-size: 3rem;
-            animation: typingLine2 2s steps(6) 2.5s forwards, glowPurple 1.5s ease-in-out infinite alternate 4.5s;
+        .line-store {
             color: #fff;
-            width: 0;
-            overflow: hidden;
-            white-space: nowrap;
-            display: block;
+            text-shadow: 0 0 15px var(--neon-purple);
+            width: 0; overflow: hidden; white-space: nowrap; display: block;
+            animation: typing 2s steps(10) 2.5s forwards;
+            font-size: 3.5rem;
         }
 
-        @keyframes typingLine1 { to { width: 100%; } }
-        @keyframes typingLine2 { to { width: 100%; } }
+        @keyframes typing { from { width: 0; } to { width: 100%; } }
 
-        /* CORRECCIÓN DE LAG: Usamos scale en lugar de font-size */
-        @keyframes text3D {
-            0% { transform: translateZ(-500px) rotateX(90deg) scale(0.5); opacity: 0; }
-            15% { transform: translateZ(0) rotateX(0deg) scale(1); opacity: 1; }
-            80% { transform: translateZ(0) rotateX(0deg) scale(1.05); opacity: 1; }
-            100% { 
-                transform: translateZ(400px) scale(5); 
-                opacity: 0; 
-                filter: blur(15px);
-                visibility: hidden;
-            }
+        @keyframes techIntro {
+            0% { transform: translateZ(-200px) rotateX(20deg); opacity: 0; }
+            15% { transform: translateZ(0) rotateX(0); opacity: 1; }
+            75% { transform: scale(1); filter: blur(0); opacity: 1; }
+            90% { transform: scale(3.5); filter: blur(10px); opacity: 0.5; }
+            100% { transform: scale(6); filter: blur(20px); opacity: 0; }
         }
 
-        @keyframes glowOrange {
-            from { text-shadow: 0 0 10px var(--neon-orange-glow), 0 0 20px var(--neon-orange-glow); }
-            to { text-shadow: 0 0 20px var(--neon-orange-glow), 0 0 40px var(--neon-orange-glow), 0 0 60px var(--neon-orange-glow); }
-        }
-
-        @keyframes glowPurple {
-            from { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-            to { text-shadow: 0 0 20px var(--neon-purple-glow), 0 0 40px var(--neon-purple-glow); color: var(--neon-purple); }
-        }
-
-        @keyframes fadeOutIntro {
-            to { opacity: 0; visibility: hidden; }
-        }
-
-        /* --- PÁGINA PRINCIPAL --- */
+        /* --- CONTENIDO PRINCIPAL --- */
         #main-content {
             opacity: 0;
-            animation: fadeInMain 1s ease-out 6.8s forwards;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            animation: fadeIn 1s ease forwards 7s;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 50px 20px;
         }
 
-        @keyframes fadeInMain { to { opacity: 1; } }
-
-        header { text-align: center; margin-bottom: 50px; }
-        header h1 { font-size: 3.5rem; text-transform: uppercase; text-shadow: 0 0 20px var(--neon-purple-glow); }
+        header { text-align: center; margin-bottom: 80px; }
+        header h1 { font-size: 4rem; text-shadow: 0 0 20px var(--neon-purple); color: #fff; }
         header h1 span { color: var(--neon-purple); }
-        header p { font-size: 1.2rem; color: #ccc; margin-top: 10px; }
+        header p { color: #888; font-size: 1.2rem; margin-top: 10px; text-transform: uppercase; }
 
-        .whatsapp-section { text-align: center; margin-bottom: 60px; }
-        .whatsapp-btn {
-            width: 100px; height: 100px; border-radius: 50%;
-            background-color: var(--neon-whatsapp);
-            display: inline-flex; justify-content: center; align-items: center;
-            font-size: 3.5rem; color: white; text-decoration: none;
-            box-shadow: 0 0 30px rgba(37, 211, 102, 0.4);
-            transition: 0.3s; margin-top: 15px;
+        /* WHATSAPP */
+        .wa-card {
+            background: rgba(157, 0, 255, 0.05);
+            border: 2px solid var(--neon-purple);
+            padding: 30px; border-radius: 30px;
+            text-align: center; margin-bottom: 80px;
+            box-shadow: 0 0 20px rgba(157, 0, 255, 0.2);
         }
-        .whatsapp-btn:hover { transform: scale(1.1); box-shadow: 0 0 50px var(--neon-whatsapp); }
 
-        /* TARJETAS DE PRECIOS */
+        .wa-logo {
+            width: 120px; height: 120px; background: #25d366;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 4rem; color: #fff; margin: 20px auto;
+            text-decoration: none; box-shadow: 0 0 30px #25d366;
+            transition: 0.3s;
+        }
+        .wa-logo:hover { transform: scale(1.1) rotate(10deg); }
+
+        /* GRID PRECIOS */
         .pricing-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px; width: 100%; max-width: 1200px;
+            gap: 30px;
         }
 
-        .price-card {
-            background: rgba(20, 20, 20, 0.9);
-            border-radius: 20px; padding: 35px;
-            text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: 0.3s;
+        .card {
+            background: rgba(10, 10, 10, 0.9);
+            padding: 40px; border-radius: 25px;
+            border: 2px solid; text-align: center;
+            transition: 0.4s; position: relative;
+            overflow: hidden;
         }
-        .price-card:hover { transform: translateY(-10px); }
+        .card:hover { transform: translateY(-15px); }
 
-        .card-duration { font-size: 1.8rem; font-weight: bold; margin-bottom: 5px; }
-        .card-price { font-size: 2.5rem; font-weight: bold; margin-bottom: 20px; }
-        .card-features { list-style: none; text-align: left; margin-bottom: 25px; color: #bbb; line-height: 1.8; }
+        .price { font-size: 3rem; font-weight: bold; margin: 20px 0; }
+        .features { list-style: none; text-align: left; margin-bottom: 30px; color: #ccc; }
+        .features li { margin: 10px 0; font-size: 1.1rem; }
 
         .buy-btn {
-            background: none; border: 2px solid; padding: 12px;
-            width: 100%; border-radius: 50px; color: white;
-            font-weight: bold; cursor: pointer; transition: 0.3s;
+            width: 100%; padding: 15px; border-radius: 50px;
+            border: none; font-weight: bold; font-size: 1.2rem;
+            cursor: pointer; color: #fff; transition: 0.3s;
+            text-transform: uppercase; background: rgba(255,255,255,0.1);
         }
 
-        /* COLORES DE TARJETAS */
-        .card-blue { border-color: var(--neon-blue); }
-        .card-blue .card-duration, .card-blue .card-price { color: var(--neon-blue); }
-        .card-blue .buy-btn { border-color: var(--neon-blue); }
-        .card-blue .buy-btn:hover { background: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); }
+        /* COLORES ESPECÍFICOS */
+        .blue { border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(0,210,255,0.3); }
+        .blue .buy-btn { background: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); }
 
-        .card-green { border-color: var(--neon-green); }
-        .card-green .card-duration, .card-green .card-price { color: var(--neon-green); }
-        .card-green .buy-btn { border-color: var(--neon-green); }
-        .card-green .buy-btn:hover { background: var(--neon-green); box-shadow: 0 0 20px var(--neon-green); }
+        .green { border-color: var(--neon-green); box-shadow: 0 0 15px rgba(0,255,136,0.3); }
+        .green .buy-btn { background: var(--neon-green); box-shadow: 0 0 20px var(--neon-green); }
 
-        .card-purple { border-color: var(--neon-purple); }
-        .card-purple .card-duration, .card-purple .card-price { color: var(--neon-purple); }
-        .card-purple .buy-btn { border-color: var(--neon-purple); }
-        .card-purple .buy-btn:hover { background: var(--neon-purple); box-shadow: 0 0 20px var(--neon-purple); }
+        .purple { border-color: var(--neon-purple); box-shadow: 0 0 15px rgba(188,19,254,0.3); }
+        .purple .buy-btn { background: var(--neon-purple); box-shadow: 0 0 20px var(--neon-purple); }
 
-        .card-gold { border-color: var(--neon-gold); }
-        .card-gold .card-duration, .card-gold .card-price { color: var(--neon-gold); }
-        .card-gold .buy-btn { border-color: var(--neon-gold); }
-        .card-gold .buy-btn:hover { background: var(--neon-gold); box-shadow: 0 0 20px var(--neon-gold); }
+        .gold { border-color: var(--neon-gold); box-shadow: 0 0 15px rgba(255,204,0,0.3); }
+        .gold .buy-btn { background: var(--neon-gold); box-shadow: 0 0 20px var(--neon-gold); }
 
+        /* TOAST */
         #toast {
             visibility: hidden; position: fixed; bottom: 30px; left: 50%;
-            transform: translateX(-50%); background: #1a1a1a; padding: 15px 25px;
-            border-radius: 10px; border: 1px solid var(--neon-purple); z-index: 2000;
-            opacity: 0; transition: 0.5s; text-align: center;
+            transform: translateX(-50%); background: var(--neon-purple);
+            padding: 15px 30px; border-radius: 10px; z-index: 100000;
+            font-weight: bold; box-shadow: 0 0 20px #000;
         }
-        #toast.show { visibility: visible; opacity: 1; }
+        #toast.show { visibility: visible; animation: fadeInUp 0.5s; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+        @keyframes fadeInUp { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
 
         @media (max-width: 600px) {
-            header h1 { font-size: 2.2rem; }
-            .intro-text { font-size: 2.8rem; }
-            .intro-text .line2 { font-size: 2rem; }
+            .intro-text { font-size: 2.5rem; }
+            .line-store { font-size: 2rem; }
+            header h1 { font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
 
     <div id="intro-screen">
-        <div class="intro-text-wrapper">
+        <div class="intro-content">
             <div class="intro-text">
-                <span class="line1">NEXUS</span>
-                <span class="line2">STORE 💎</span>
+                <span class="line-nexus">NEXUS</span>
+                <span class="line-store">STORE 💎</span>
             </div>
         </div>
     </div>
@@ -219,31 +201,31 @@
         <header>
             <h1>NEXUS <span>STORE</span> 👑</h1>
             <p>Tu mejor opción precios económicos</p>
-            <p style="font-size: 0.9rem; color: #888;">Descuentos y más</p>
+            <p>Descuentos y más</p>
         </header>
 
-        <section class="whatsapp-section">
-            <h2 style="font-size: 1.1rem; letter-spacing: 1px;">CANAL DE WHATSAPP DESCUENTOS Y MÁS 🔥</h2>
-            <a href="https://whatsapp.com/channel/0029VbC12x4GufIzNYfrPh3R" target="_blank" class="whatsapp-btn">
+        <div class="wa-card">
+            <h3>CANAL DE WHATSAPP DESCUENTOS Y MÁS 🔥</h3>
+            <a href="https://whatsapp.com/channel/0029VbC12x4GufIzNYfrPh3R" target="_blank" class="wa-logo">
                 <i class="fab fa-whatsapp"></i>
             </a>
-        </section>
+        </div>
 
-        <section class="pricing-grid">
-            <div class="price-card card-blue">
-                <div class="card-duration">1 DÍA</div>
-                <div class="card-price">$ 2 USD</div>
-                <ul class="card-features">
+        <div class="pricing-grid">
+            <div class="card blue">
+                <h2>1 DÍA</h2>
+                <div class="price">$ 2 USD</div>
+                <ul class="features">
                     <li>🟢 Acceso 24 horas</li>
                     <li>🟢 Entrega inmediata</li>
                 </ul>
                 <button class="buy-btn" onclick="comprar('1 DÍA')">COMPRAR 💳</button>
             </div>
 
-            <div class="price-card card-green">
-                <div class="card-duration">7 DÍAS</div>
-                <div class="card-price">$ 7 USD</div>
-                <ul class="card-features">
+            <div class="card green">
+                <h2>7 DÍAS</h2>
+                <div class="price">$ 7 USD</div>
+                <ul class="features">
                     <li>🟢 Soporte standard</li>
                     <li>🟢 Actualizaciones</li>
                     <li>🟢 Entrega inmediata</li>
@@ -251,10 +233,10 @@
                 <button class="buy-btn" onclick="comprar('7 DÍAS')">COMPRAR 💳</button>
             </div>
 
-            <div class="price-card card-purple">
-                <div class="card-duration">15 DÍAS</div>
-                <div class="card-price">$ 12 USD</div>
-                <ul class="card-features">
+            <div class="card purple">
+                <h2>15 DÍAS</h2>
+                <div class="price">$ 12 USD</div>
+                <ul class="features">
                     <li>🟢 Soporte 24/7</li>
                     <li>🟢 Actualizaciones inmediatas</li>
                     <li>🟢 Entrega inmediata</li>
@@ -262,10 +244,10 @@
                 <button class="buy-btn" onclick="comprar('15 DÍAS')">COMPRAR 💳</button>
             </div>
 
-            <div class="price-card card-gold">
-                <div class="card-duration">1 MES</div>
-                <div class="card-price">$ 18 USD</div>
-                <ul class="card-features">
+            <div class="card gold">
+                <h2>1 MES</h2>
+                <div class="price">$ 18 USD</div>
+                <ul class="features">
                     <li>🟢 Soporte prioritario</li>
                     <li>🟢 Actualizaciones constantes</li>
                     <li>🟢 Acceso completo</li>
@@ -273,38 +255,30 @@
                 </ul>
                 <button class="buy-btn" onclick="comprar('1 MES')">COMPRAR 💳</button>
             </div>
-        </section>
+        </div>
     </div>
 
-    <div id="toast">Copiado: Quiero adquirir drip cliente🟣...<br>Redirigiendo a TikTok</div>
+    <div id="toast">Copiando pedido y redirigiendo...</div>
 
     <script>
-        function comprar(paquete) {
-            const texto = `Quiero adquirir drip cliente🟣 de el paquete que eligió: ${paquete}`;
+        function comprar(pack) {
+            const txt = `Quiero adquirir drip cliente🟣 de el paquete que eligió: ${pack}`;
             const tiktok = "https://tiktok.com/@softworks32";
 
-            // Copiar al portapapeles
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(texto).then(() => {
-                    finalizarCompra(tiktok);
-                });
-            } else {
-                const area = document.createElement("textarea");
-                area.value = texto;
-                document.body.appendChild(area);
-                area.select();
-                document.execCommand("copy");
-                document.body.removeChild(area);
-                finalizarCompra(tiktok);
-            }
-        }
+            // Copiar texto
+            const el = document.createElement('textarea');
+            el.value = txt;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
 
-        function finalizarCompra(link) {
+            // Mostrar aviso y redirigir
             const toast = document.getElementById("toast");
-            toast.classList.add("show");
+            toast.className = "show";
             setTimeout(() => {
-                window.open(link, "_blank");
-                toast.classList.remove("show");
+                window.open(tiktok, "_blank");
+                toast.className = toast.className.replace("show", "");
             }, 1500);
         }
     </script>
