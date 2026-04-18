@@ -1,197 +1,313 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NEXUS STORE 💎</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --purple: #bc13fe;
-      --orange: #ff6600;
-      --blue:   #00d2ff;
-      --green:  #00ff88;
-      --gold:   #ffcc00;
-      --cyan:   #00ccff;
-      --bg:     #05000a;
-    }
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>NEXUS STORE 💎 | PREMIUM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --purple: #bc13fe; --orange: #ff6600; --blue: #00d2ff;
+            --green: #00ff88; --gold: #ffcc00; --cyan: #00ccff;
+            --bg: #05000a; --neon-shadow: 0 0 15px rgba(188, 19, 254, 0.6);
+        }
 
-    body { background:var(--bg); color:#fff; font-family:'Rajdhani',sans-serif; overflow-x:hidden; }
+        /* RESET & BASE */
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        body { background:var(--bg); color:#fff; font-family:'Rajdhani',sans-serif; overflow-x:hidden; min-height: 100vh; }
 
-    /* --- INTRO OPTIMIZADA (SIN LAG) --- */
-    #intro {
-      position:fixed; inset:0; z-index:99999;
-      background:#000;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      overflow:hidden;
-    }
+        /* ═══════════════════════════════════
+           SISTEMA DE INTRO (ANTI-LAG)
+        ═══════════════════════════════════ */
+        #intro {
+            position:fixed; inset:0; z-index:99999; background:#000;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            overflow:hidden;
+        }
 
-    .intro-inner {
-      position:relative; z-index:3;
-      text-align:center;
-      will-change: transform, opacity;
-      transform: translateZ(0);
-      animation: introZoom 8.5s cubic-bezier(.25,.46,.45,.94) forwards;
-    }
+        #pCanvas { position:absolute; inset:0; z-index:0; opacity: 0.6; }
 
-    @keyframes introZoom {
-      0%   { transform:scale(.4) translateY(60px); opacity:0; filter:blur(15px); }
-      14%  { transform:scale(1) translateY(0);  opacity:1; filter:blur(0); }
-      82%  { transform:scale(1.05); opacity:1; filter:blur(0); }
-      100% { transform:scale(10);  opacity:0; filter:blur(30px); }
-    }
+        .scanline {
+            position: absolute; inset: 0; z-index: 2; pointer-events: none;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, .3) 50%);
+            background-size: 100% 4px;
+        }
 
-    .glitch {
-      font-family:'Orbitron',sans-serif;
-      font-size: clamp(3.5rem, 12vw, 8rem);
-      font-weight:900; color: var(--orange);
-      letter-spacing: 16px; text-transform:uppercase;
-      text-shadow: 0 0 15px var(--orange);
-      position:relative; display:block;
-    }
+        .intro-inner {
+            position:relative; z-index:3; text-align:center;
+            will-change: transform, opacity; transform: translateZ(0);
+            animation: introZoom 8.5s cubic-bezier(.25,.46,.45,.94) forwards;
+        }
 
-    .intro-bar-fill {
-      height:100%; width: 100%;
-      background: linear-gradient(90deg,var(--purple),var(--orange),var(--blue));
-      box-shadow: 0 0 12px var(--purple);
-      animation: fillBar 4s ease 3.8s forwards;
-      clip-path: inset(0 100% 0 0); /* Optimización de lag */
-    }
-    @keyframes fillBar { to { clip-path: inset(0 0 0 0); } }
+        @keyframes introZoom {
+            0%   { transform:scale(.4) translateY(60px); opacity:0; filter:blur(20px); }
+            15%  { transform:scale(1); opacity:1; filter:blur(0); }
+            85%  { transform:scale(1.1); opacity:1; filter:blur(0); }
+            100% { transform:scale(15); opacity:0; filter:blur(50px); }
+        }
 
-    /* --- MAIN & CARDS --- */
-    .grid-bg {
-      position:fixed; inset:0; z-index:-1;
-      background-image: linear-gradient(rgba(188,19,254,.05) 1px, transparent 1px),
-                        linear-gradient(90deg,rgba(188,19,254,.05) 1px, transparent 1px);
-      background-size:44px 44px;
-      animation: gridScroll 9s linear infinite;
-    }
-    @keyframes gridScroll { to{transform: translateY(44px);} }
+        .glitch-main {
+            font-family:'Orbitron',sans-serif; font-size: clamp(3.5rem, 12vw, 8rem);
+            font-weight:900; color: var(--orange); letter-spacing: 15px;
+            text-transform:uppercase; text-shadow: 0 0 20px var(--orange), 0 0 40px rgba(255,102,0,0.5);
+            position: relative;
+        }
 
-    #main { opacity:0; animation: showMain 1s ease 7.5s forwards; padding-bottom:120px; }
-    @keyframes showMain { to{opacity:1} }
+        /* BARRA DE CARGA OPTIMIZADA */
+        .loader-wrap { margin-top: 40px; width: 280px; position: relative; }
+        .loader-track { height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .loader-fill {
+            height: 100%; width: 100%; background: linear-gradient(90deg, var(--purple), var(--cyan));
+            clip-path: inset(0 100% 0 0); animation: loadFill 4s ease 3.8s forwards;
+        }
+        @keyframes loadFill { to { clip-path: inset(0 0 0 0); } }
 
-    .container { max-width:1150px; margin:0 auto; padding:24px; text-align:center; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:26px; margin-top:40px; }
+        /* ═══════════════════════════════════
+           FONDO DINÁMICO & LIGHTNING
+        ═══════════════════════════════════ */
+        .grid-master {
+            position:fixed; inset:0; z-index:-1;
+            background-image: linear-gradient(rgba(188,19,254,0.08) 1.5px, transparent 1.5px),
+                              linear-gradient(90deg, rgba(188,19,254,0.08) 1.5px, transparent 1.5px);
+            background-size: 50px 50px; transform: perspective(500px) rotateX(60deg);
+            transform-origin: center top; animation: gridMove 10s linear infinite;
+        }
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 50px; } }
 
-    .card {
-      background:rgba(8,0,16,.88); border:2px solid; border-radius:22px;
-      padding:36px 24px; transition:.4s; backdrop-filter:blur(12px);
-    }
-    .card:hover { transform:translateY(-10px); }
+        #lightning { position: fixed; inset: 0; z-index: 9998; pointer-events: none; opacity: 0; }
+        .flash-effect { animation: lightningFlash 0.7s ease-out; }
+        @keyframes lightningFlash {
+            0% { background: rgba(255,255,255,0); opacity: 0; }
+            10% { background: rgba(255,255,255,0.2); opacity: 1; }
+            20% { background: rgba(188,19,254,0.1); opacity: 0.5; }
+            100% { background: transparent; opacity: 0; }
+        }
 
-    .buy-btn {
-      width:100%; padding:15px; border-radius:50px; border:none;
-      font-family:'Orbitron',sans-serif; color:#fff; cursor:pointer; font-weight:700;
-    }
+        /* ═══════════════════════════════════
+           CONTENIDO (ESTILO 700 LÍNEAS)
+        ═══════════════════════════════════ */
+        #main-content { opacity: 0; visibility: hidden; padding-bottom: 120px; transition: opacity 1.5s ease 8s; }
+        .loaded #main-content { opacity: 1; visibility: visible; }
 
-    .t-purple { border-color:var(--purple); }
-    .t-purple .buy-btn { background: var(--purple); box-shadow:0 0 20px var(--purple); }
-    .t-cyan { border-color:var(--cyan); }
-    .t-cyan .buy-btn { background: var(--cyan); box-shadow:0 0 20px var(--cyan); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        header { padding: 80px 0 40px; text-align: center; }
+        .hero-title { 
+            font-family: 'Orbitron', sans-serif; font-size: clamp(2.8rem, 8vw, 5rem);
+            text-shadow: 0 0 30px var(--purple); color: #fff;
+        }
 
-    /* TOAST & MODAL */
-    #toast {
-      position:fixed; top:-90px; left:50%; transform:translateX(-50%);
-      background:var(--purple); color:#fff; padding:14px 30px; border-radius:50px;
-      transition:.5s; z-index:999999;
-    }
-    #toast.on { top:28px; }
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px; margin-top: 50px;
+        }
 
-    #modal {
-      display:none; position:fixed; inset:0; z-index:99998;
-      background:rgba(0,0,0,.85); align-items:center; justify-content:center;
-    }
-    #modal.on { display:flex; }
-    .modal-box { background:#0d0018; border:2px solid var(--purple); padding:40px; border-radius:24px; text-align:center; max-width:400px; }
-  </style>
+        .glass-card {
+            background: rgba(10, 2, 20, 0.85); border: 1px solid rgba(188,19,254,0.3);
+            border-radius: 25px; padding: 45px 30px; text-align: center;
+            backdrop-filter: blur(15px); transition: 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative; overflow: hidden;
+        }
+        .glass-card:hover { transform: translateY(-20px); border-color: var(--purple); box-shadow: 0 0 40px rgba(188,19,254,0.3); }
+
+        .price-tag { font-family: 'Orbitron', sans-serif; font-size: 3rem; font-weight: 900; margin: 20px 0; }
+        
+        .btn-nexus {
+            width: 100%; padding: 18px; border-radius: 50px; border: none;
+            font-family: 'Orbitron', sans-serif; font-weight: 700; color: #fff;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+            background: linear-gradient(135deg, #7700cc, var(--purple));
+            box-shadow: 0 0 20px rgba(188,19,254,0.4); transition: 0.3s;
+        }
+        .btn-nexus:hover { filter: brightness(1.2); transform: scale(1.03); }
+
+        /* CUBA MODS STYLE */
+        .sky-section { margin-top: 120px; border-top: 1px solid rgba(0,210,255,0.2); padding-top: 60px; }
+        .t-sky { border-color: var(--cyan); }
+        .t-sky .price-tag { color: var(--cyan); }
+        .btn-sky { background: linear-gradient(135deg, #0088cc, var(--cyan)); box-shadow: 0 0 20px rgba(0,204,255,0.4); }
+
+        /* NOTIFICATION */
+        #toast {
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+            background: var(--purple); padding: 15px 40px; border-radius: 50px;
+            font-family: 'Orbitron', sans-serif; z-index: 100000; transition: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        #toast.active { bottom: 40px; }
+
+        /* MODAL */
+        #purchase-modal {
+            display: none; position: fixed; inset: 0; z-index: 999998;
+            background: rgba(0,0,0,0.92); backdrop-filter: blur(10px);
+            align-items: center; justify-content: center;
+        }
+        #purchase-modal.open { display: flex; }
+        .modal-content {
+            background: #0d0018; border: 2px solid var(--purple);
+            padding: 50px; border-radius: 30px; text-align: center; max-width: 450px; width: 90%;
+            box-shadow: 0 0 100px rgba(188,19,254,0.2);
+        }
+    </style>
 </head>
-<body>
+<body class="loading">
 
-<div id="intro">
-  <div class="intro-inner">
-    <span class="glitch">NEXUS</span>
-    <div class="intro-bar-fill"></div>
-  </div>
-</div>
+    <div id="lightning"></div>
+    <div class="grid-master"></div>
+    <div id="toast">✅ MENSAJE COPIADO</div>
 
-<div class="grid-bg"></div>
-<div id="toast">✅ COPIADO</div>
-
-<div id="modal">
-  <div class="modal-box">
-    <h3 style="color:var(--purple)">⚡ CONFIRMAR</h3>
-    <p id="modalPlan" style="margin:20px 0; font-size:1.2rem"></p>
-    <button onclick="doCompra()" style="padding:10px 20px; background:var(--purple); border:none; color:#fff; border-radius:50px; cursor:pointer">IR A TIKTOK 🚀</button>
-    <button onclick="closeModal()" style="background:transparent; color:#555; border:none; margin-top:10px; cursor:pointer">CANCELAR</button>
-  </div>
-</div>
-
-<div id="main">
-  <div class="container">
-    <h1 style="font-size:3rem; text-shadow:0 0 20px var(--purple)">NEXUS STORE 👑</h1>
-    
-    <div class="grid">
-      <div class="card t-purple">
-        <h2>1 MES</h2>
-        <div style="font-size:2rem; margin:15px 0">$18 USD</div>
-        <button class="buy-btn" onclick="openModal('Drip Cliente 🟣','Quiero adquirir drip cliente🟣 :1 MES')">COMPRAR 💳</button>
-      </div>
+    <div id="intro">
+        <canvas id="pCanvas"></canvas>
+        <div class="scanline"></div>
+        <div class="intro-inner">
+            <h1 class="glitch-main">NEXUS</h1>
+            <div class="loader-wrap">
+                <div class="loader-track"><div class="loader-fill"></div></div>
+                <p style="font-size: 0.7rem; letter-spacing: 5px; margin-top: 10px; color: #444;">SYNCING_SYSTEM...</p>
+            </div>
+        </div>
     </div>
 
-    <div style="margin-top:80px; border-top:1px solid var(--cyan); padding-top:40px">
-      <h2 style="color:var(--cyan); font-size:2.5rem; text-shadow:0 0 20px var(--cyan)">CUBA MODS 🔵</h2>
-      <div class="grid">
-        <div class="card t-cyan">
-          <h2>3 DÍAS</h2>
-          <div>$70 MXN</div>
-          <button class="buy-btn" onclick="openModal('Cuba Mods 🔵','Hola, quiero adquirir cuba mods🔵 de 3 dias')">COMPRAR 💳</button>
+    <div id="purchase-modal">
+        <div class="modal-content">
+            <h2 style="font-family:'Orbitron'; color:var(--purple); margin-bottom:15px;">⚡ ACCESO</h2>
+            <p id="selected-plan" style="font-size: 1.3rem; margin-bottom: 30px; color: #fff;"></p>
+            <button class="btn-nexus" onclick="confirmRedirect()">IR A TIKTOK 🚀</button>
+            <button onclick="closeModal()" style="background:transparent; color:#555; border:none; margin-top:20px; cursor:pointer;">CANCELAR</button>
         </div>
-        <div class="card t-cyan">
-          <h2>7 DÍAS</h2>
-          <div>$160 MXN</div>
-          <button class="buy-btn" onclick="openModal('Cuba Mods 🔵','Hola, quiero adquirir cuba mods🔵 de 7 días')">COMPRAR 💳</button>
-        </div>
-        <div class="card t-cyan">
-          <h2>30 DÍAS</h2>
-          <div>$350 MXN</div>
-          <button class="buy-btn" onclick="openModal('Cuba Mods 🔵','Hola, quiero adquirir cuba mods🔵 de Mes')">COMPRAR 💳</button>
-        </div>
-      </div>
     </div>
-  </div>
-</div>
 
-<script>
-  let currentMsg = "";
-  const TIKTOK_URL = "https://www.tiktok.com/@nexus1841"; //
+    <div id="main-content">
+        <div class="container">
+            <header>
+                <h1 class="hero-title">NEXUS <span style="color:var(--purple)">STORE</span></h1>
+                <p style="letter-spacing: 8px; color: #666; text-transform: uppercase;">Premium Digital Assets</p>
+            </header>
 
-  function openModal(plan, msg) {
-    document.getElementById('modalPlan').innerText = plan;
-    currentMsg = msg;
-    document.getElementById('modal').classList.add('on');
-  }
+            <div style="text-align:center; color:var(--purple); font-family:'Orbitron'; font-size:1.8rem; letter-spacing:10px;">DRIP CLIENTE 🟣</div>
+            <div class="pricing-grid">
+                <div class="glass-card">
+                    <h2 style="color:var(--purple)">1 MES</h2>
+                    <div class="price-tag">$18 USD</div>
+                    <ul style="list-style:none; color:#999; margin-bottom:30px; line-height:2;">
+                        <li>🟢 FULL ACCESS</li>
+                        <li>🟢 SUPPORT 24/7</li>
+                        <li>🟢 AUTO UPDATE</li>
+                    </ul>
+                    <button class="btn-nexus" onclick="handlePurchase('Drip Cliente 🟣','Quiero adquirir drip cliente🟣 :1 MES')">ADQUIRIR 💳</button>
+                </div>
+            </div>
 
-  function closeModal() { document.getElementById('modal').classList.remove('on'); }
+            <div class="sky-section">
+                <div style="text-align:center; color:var(--cyan); font-family:'Orbitron'; font-size:1.8rem; letter-spacing:10px; margin-bottom:40px;">CUBA MODS 🔵</div>
+                <div class="pricing-grid">
+                    <div class="glass-card t-sky">
+                        <h2>3 DÍAS</h2>
+                        <div class="price-tag">$70 MXN</div>
+                        <button class="btn-nexus btn-sky" onclick="handlePurchase('Cuba Mods 🔵','Hola, quiero adquirir cuba mods🔵 de 3 dias')">ADQUIRIR 💳</button>
+                    </div>
+                    <div class="glass-card t-sky">
+                        <h2>7 DÍAS</h2>
+                        <div class="price-tag">$160 MXN</div>
+                        <button class="btn-nexus btn-sky" onclick="handlePurchase('Cuba Mods 🔵','Hola, quiero adquirir cuba mods🔵 de 7 días')">ADQUIRIR 💳</button>
+                    </div>
+                    <div class="glass-card t-sky">
+                        <h2>30 DÍAS</h2>
+                        <div class="price-tag">$350 MXN</div>
+                        <button class="btn-nexus btn-sky" onclick="handlePurchase('Cuba Mods 🔵','Hola, quiero adquirir cuba mods🔵 de Mes')">ADQUIRIR 💳</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  function doCompra() {
-    const el = document.createElement('textarea');
-    el.value = currentMsg; //
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    
-    document.getElementById('toast').classList.add('on');
-    setTimeout(() => {
-      window.open(TIKTOK_URL, "_blank");
-      document.getElementById('toast').classList.remove('on');
-      closeModal();
-    }, 1200);
-  }
-</script>
+    <script>
+        // 1. MOTOR DE PARTÍCULAS (HIGH PERFORMANCE)
+        const canvas = document.getElementById('pCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.onresize = resize; resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5;
+                this.size = Math.random() * 2;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = '#bc13fe';
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+            }
+        }
+
+        for(let i=0; i<100; i++) particles.push(new Particle());
+
+        function loop() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(loop);
+        }
+        loop();
+
+        // 2. EFECTOS ATMOSFÉRICOS
+        setInterval(() => {
+            if(Math.random() > 0.8) {
+                const l = document.getElementById('lightning');
+                l.classList.add('flash-effect');
+                setTimeout(() => l.classList.remove('flash-effect'), 700);
+            }
+        }, 4000);
+
+        // 3. LÓGICA DE TIENDA
+        let activeMsg = "";
+        const TIKTOK_URL = "https://www.tiktok.com/@nexus1841";
+
+        function handlePurchase(plan, msg) {
+            document.getElementById('selected-plan').innerText = plan;
+            activeMsg = msg;
+            document.getElementById('purchase-modal').classList.add('open');
+        }
+
+        function closeModal() { document.getElementById('purchase-modal').classList.remove('open'); }
+
+        function confirmRedirect() {
+            const el = document.createElement('textarea');
+            el.value = activeMsg;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const toast = document.getElementById('toast');
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                window.open(TIKTOK_URL, "_blank");
+                toast.classList.remove('active');
+                closeModal();
+            }, 1200);
+        }
+
+        // CONTROL DE CARGA
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.body.classList.remove('loading');
+                document.body.classList.add('loaded');
+                setTimeout(() => document.getElementById('intro').style.display = 'none', 1000);
+            }, 8500);
+        });
+    </script>
 </body>
 </html>
