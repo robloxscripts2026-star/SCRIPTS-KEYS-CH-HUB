@@ -1,255 +1,242 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>NEXUS STORE 💎 | PREMIUM</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Cruda Realidad - Experiencia Inmersiva</title>
     <style>
-        :root {
-            --purple: #bc13fe; --orange: #ff6600; --blue: #00d2ff;
-            --green: #00ff88; --gold: #ffcc00; --cyan: #00ccff;
-            --bg: #05000a;
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@200;400;600&display=swap');
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { background:var(--bg); color:#fff; font-family:'Rajdhani',sans-serif; overflow-x:hidden; }
-
-        /* ═══════════════════════════════════
-           INTRO ENGINE (ZERO LAG)
-        ═══════════════════════════════════ */
-        #intro {
-            position:fixed; inset:0; z-index:99999; background:#000;
-            display:flex; flex-direction:column; align-items:center; justify-content:center;
-            overflow:hidden;
-        }
-        #pCanvas { position:absolute; inset:0; z-index:0; opacity: 0.5; }
-        .intro-inner {
-            position:relative; z-index:3; text-align:center;
-            will-change: transform, opacity; transform: translateZ(0);
-            animation: introZoom 8.5s cubic-bezier(.25,.46,.45,.94) forwards;
-        }
-        @keyframes introZoom {
-            0%   { transform:scale(.4) translateY(60px); opacity:0; filter:blur(15px); }
-            15%  { transform:scale(1); opacity:1; filter:blur(0); }
-            85%  { transform:scale(1.1); opacity:1; filter:blur(0); }
-            100% { transform:scale(15); opacity:0; filter:blur(40px); }
-        }
-        .glitch-text {
-            font-family:'Orbitron',sans-serif; font-size: clamp(3rem, 10vw, 7rem);
-            font-weight:900; color: var(--orange); letter-spacing: 15px;
-            text-transform:uppercase; text-shadow: 0 0 20px var(--orange);
-        }
-        .loader-bar {
-            width: 250px; height: 3px; background: rgba(255,255,255,0.1);
-            margin-top: 30px; border-radius: 10px; overflow: hidden;
-        }
-        .loader-fill {
-            height: 100%; width: 100%; background: linear-gradient(90deg, var(--purple), var(--cyan));
-            clip-path: inset(0 100% 0 0); animation: loadFill 4s ease 3.8s forwards;
-        }
-        @keyframes loadFill { to { clip-path: inset(0 0 0 0); } }
-
-        /* ═══════════════════════════════════
-           ATMOSPHERE & BACKGROUND
-        ═══════════════════════════════════ */
-        .grid-bg {
-            position:fixed; inset:0; z-index:-1;
-            background-image: linear-gradient(rgba(188,19,254,0.05) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(188,19,254,0.05) 1px, transparent 1px);
-            background-size: 40px 40px; transform: perspective(500px) rotateX(60deg);
-            animation: gridMove 10s linear infinite;
-        }
-        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 40px; } }
-        #lightning { position: fixed; inset: 0; z-index: 9998; pointer-events: none; opacity: 0; }
-        .flash { animation: flashAnim 0.7s ease-out; }
-        @keyframes flashAnim {
-            0% { background: rgba(255,255,255,0.15); opacity: 1; }
-            100% { background: transparent; opacity: 0; }
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            text-align: center;
+            cursor: pointer;
         }
 
-        /* ═══════════════════════════════════
-           MAIN CONTENT
-        ═══════════════════════════════════ */
-        #main { opacity: 0; animation: fadeIn 1s ease 8s forwards; padding-bottom: 100px; }
-        @keyframes fadeIn { to { opacity: 1; } }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        
-        header { padding: 80px 0; text-align: center; }
-        .title { font-family:'Orbitron',sans-serif; font-size: clamp(2.5rem, 8vw, 4.5rem); text-shadow: 0 0 25px var(--purple); }
-
-        .section-tag {
-            font-family: 'Orbitron', sans-serif; font-size: 1.8rem; text-align: center;
-            margin: 60px 0 30px; letter-spacing: 10px; text-transform: uppercase;
+        /* Fondo Animado */
+        #canvas-wrap {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #2b0000 0%, #000 80%);
+            z-index: -1;
         }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-
-        .card {
-            background: rgba(10, 2, 20, 0.9); border: 2px solid; border-radius: 25px;
-            padding: 40px 25px; text-align: center; backdrop-filter: blur(10px);
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
-        }
-        .card:hover { transform: translateY(-15px); box-shadow: 0 10px 40px rgba(188,19,254,0.3); }
-
-        .price { font-family: 'Orbitron', sans-serif; font-size: 2.8rem; margin: 20px 0; font-weight: 900; }
-        
-        .buy-btn {
-            width: 100%; padding: 16px; border-radius: 50px; border: none;
-            font-family: 'Orbitron', sans-serif; font-weight: 700; color: #fff;
-            cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        .blood-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(0deg, rgba(255, 0, 0, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            animation: breathe 4s infinite alternate;
         }
 
-        /* CATEGORÍAS COLORES */
-        .c-purple { border-color: var(--purple); }
-        .c-purple .price { color: var(--purple); }
-        .c-purple .buy-btn { background: var(--purple); box-shadow: 0 0 15px var(--purple); }
-
-        .c-cyan { border-color: var(--cyan); }
-        .c-cyan .price { color: var(--cyan); }
-        .c-cyan .buy-btn { background: var(--cyan); box-shadow: 0 0 15px var(--cyan); }
-
-        .badge {
-            position: absolute; top: -12px; right: 20px; background: var(--orange);
-            color: #000; font-family: 'Orbitron', sans-serif; font-size: 0.7rem;
-            padding: 5px 15px; border-radius: 10px; font-weight: 900;
+        @keyframes breathe {
+            from { opacity: 0.3; }
+            to { opacity: 0.7; }
         }
 
-        /* NOTIF & MODAL */
-        #toast {
-            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
-            background: var(--purple); padding: 15px 40px; border-radius: 50px;
-            font-family: 'Orbitron', sans-serif; z-index: 100000; transition: 0.5s;
+        .container {
+            width: 90%;
+            max-width: 800px;
+            z-index: 10;
         }
-        #toast.on { bottom: 40px; }
 
-        #modal {
-            display: none; position: fixed; inset: 0; z-index: 999998;
-            background: rgba(0,0,0,0.9); align-items: center; justify-content: center;
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: #ff1a1a;
+            font-size: 1rem;
+            letter-spacing: 8px;
+            margin-bottom: 60px;
+            text-shadow: 0 0 20px #ff0000;
+            opacity: 0.8;
         }
-        #modal.on { display: flex; }
-        .m-box { background: #0d0018; border: 2px solid var(--purple); padding: 45px; border-radius: 30px; text-align: center; width: 90%; max-width: 400px; }
+
+        #lyrics-container {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .lyric {
+            position: absolute;
+            width: 100%;
+            font-size: 1.5rem;
+            font-weight: 200;
+            line-height: 1.8;
+            opacity: 0;
+            transform: scale(0.8) translateY(30px);
+            filter: blur(15px);
+            transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+            padding: 0 20px;
+        }
+
+        .lyric.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            filter: blur(0px);
+        }
+
+        .emphasize {
+            color: #ff1a1a;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .subtext {
+            display: block;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            color: #888;
+            font-style: italic;
+        }
+
+        #intro-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 1.5s;
+        }
+
+        .heart-icon {
+            font-size: 5rem;
+            color: #ff1a1a;
+            cursor: pointer;
+            animation: heartbeat 1.5s infinite;
+            filter: drop-shadow(0 0 20px #ff1a1a);
+            background: none;
+            border: none;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.15); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.25); }
+            70% { transform: scale(1); }
+        }
+
+        .hint-text {
+            margin-top: 30px;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: #444;
+            text-transform: uppercase;
+        }
+
+        #tap-indicator {
+            position: fixed;
+            bottom: 40px;
+            font-size: 0.6rem;
+            color: #333;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: opacity 2s;
+        }
     </style>
 </head>
 <body>
 
-    <div id="lightning"></div>
-    <div class="grid-bg"></div>
-    <div id="toast">✅ COPIADO</div>
+    <div id="canvas-wrap">
+        <div class="blood-overlay"></div>
+    </div>
 
-    <div id="intro">
-        <canvas id="pCanvas"></canvas>
-        <div class="intro-inner">
-            <h1 class="glitch-text">NEXUS</h1>
-            <div class="loader-bar"><div class="loader-fill"></div></div>
+    <div id="intro-screen">
+        <button class="heart-icon" id="start-btn">❤️‍🩹</button>
+        <p class="hint-text">Siente la historia</p>
+    </div>
+
+    <div class="container">
+        <h1>LA CRUDA REALIDAD</h1>
+        
+        <div id="lyrics-container">
+            <div class="lyric active">Todo empezó con una pregunta simple... <span class="subtext">A veces las respuestas más crueles vienen de lo más cotidiano.</span></div>
+            <div class="lyric">"¿Juegas Blood?" 🎮</div>
+            <div class="lyric">Su respuesta fue el inicio del fin: <span class="emphasize">"No, pero sí juego..."</span></div>
+            <div class="lyric">"¿Y qué juegas?" pregunté, sin saber que me disparaba al corazón.</div>
+            <div class="lyric">"Juego con tus sentimientos..." 💔 <span class="subtext">Esa frase se quedó grabada en el silencio.</span></div>
+            <div class="lyric">"Nunca quise algo serio contigo"</div>
+            <div class="lyric">"No te quería..." <span class="emphasize">"...pero tampoco te quería dejar ir"</span> 🥀</div>
+            <div class="lyric">Ahí me di cuenta de la verdad: nunca hubo un "nosotros".</div>
+            <div class="lyric">Solo era un juego de indecisiones donde yo ponía el alma.</div>
+            <div class="lyric">Nunca quiso expresar lo que sentía, porque no sentía nada.</div>
+            <div class="lyric">No me quería, pero amaba el poder de no perderme.</div>
+            <div class="lyric">Duele saber que cada beso, cada "te quiero"... <span class="emphasize">no significó nada para ella.</span></div>
+            <div class="lyric">Y aunque el mundo me diga que la olvide, mi corazón aún no sabe cómo.</div>
+            <div class="lyric">Porque yo sí la amaba, con la verdad por delante. 😔</div>
+            <div class="lyric">Duele ver el vacío, pero hubiera dolido más una mentira eterna.</div>
+            <div class="lyric">A veces cuesta olvidar... <span class="emphasize">pero el amor no tiene un interruptor.</span> 💡</div>
+            <div class="lyric">No puedes apagar lo que encendiste con tanta ilusión.</div>
+            <div class="lyric">Te va a tomar tiempo... días grises y noches largas.</div>
+            <div class="lyric">Recordando a esa persona que te hacía sentir <span class="emphasize">invencible</span>. ✨</div>
+            <div class="lyric">¿Realmente extrañas a tu ex? <span class="subtext">O extrañas quién eras tú cuando estabas con ella...</span></div>
+            <div class="lyric">Olvidar los detalles es lo más difícil.</div>
+            <div class="lyric">Esa carta guardada en el cajón... 📝</div>
+            <div class="lyric">Ese beso que te reiniciaba el mundo... 💋</div>
+            <div class="lyric">O esa rosa que se secó, igual que lo nuestro. 🌹</div>
+            <div class="lyric">Por más mínimos que fueran, eran gigantes para mí.</div>
+            <div class="lyric">Hoy solo queda el eco de lo que pudo ser.</div>
+            <div class="lyric">Sanar no es olvidar, es recordar sin que queme. 🔥</div>
+            <div class="lyric">Tómate tu tiempo. <span class="emphasize">Vas a volver a brillar.</span> ❤️</div>
+            <div class="lyric">Fin de la historia. 🥀</div>
         </div>
     </div>
 
-    <div id="modal">
-        <div class="m-box">
-            <h2 style="color:var(--purple); font-family:'Orbitron'">⚡ CONFIRMAR</h2>
-            <p id="mPlan" style="margin: 25px 0; font-size: 1.2rem;"></p>
-            <button class="buy-btn" onclick="goToTikTok()" style="background:var(--purple)">IR A TIKTOK 🚀</button>
-            <button onclick="closeM()" style="background:transparent; color:#555; border:none; margin-top:20px; cursor:pointer;">CANCELAR</button>
-        </div>
-    </div>
+    <p id="tap-indicator">Toca para sumergirte más...</p>
 
-    <div id="main">
-        <div class="container">
-            <header>
-                <h1 class="title">NEXUS <span style="color:var(--purple)">STORE</span> 💎</h1>
-                <p style="color:#555; letter-spacing:5px;">PREMIUM DIGITAL MODS</p>
-            </header>
-
-            <div class="section-tag" style="color:var(--purple)">DRIP CLIENTE 🟣</div>
-            <div class="grid">
-                <div class="card c-purple">
-                    <h2>1 DÍA</h2><div class="price">$2 USD</div>
-                    <button class="buy-btn" onclick="openM('Drip Cliente 🟣 · 1 DÍA','Quiero adquirir drip cliente🟣 :1 DÍA')">COMPRAR 💳</button>
-                </div>
-                <div class="card c-purple">
-                    <h2>7 DÍAS</h2><div class="price">$7 USD</div>
-                    <button class="buy-btn" onclick="openM('Drip Cliente 🟣 · 7 DÍAS','Quiero adquirir drip cliente🟣 :7 DÍAS')">COMPRAR 💳</button>
-                </div>
-                <div class="card c-purple">
-                    <div class="badge">POPULAR</div>
-                    <h2>15 DÍAS</h2><div class="price">$12 USD</div>
-                    <button class="buy-btn" onclick="openM('Drip Cliente 🟣 · 15 DÍAS','Quiero adquirir drip cliente🟣 :15 DÍAS')">COMPRAR 💳</button>
-                </div>
-                <div class="card c-purple">
-                    <h2>1 MES</h2><div class="price">$18 USD</div>
-                    <button class="buy-btn" onclick="openM('Drip Cliente 🟣 · 1 MES','Quiero adquirir drip cliente🟣 :1 MES')">COMPRAR 💳</button>
-                </div>
-            </div>
-
-            <div class="section-tag" style="color:var(--cyan); margin-top:100px;">CUBA MODS 🔵</div>
-            <div class="grid">
-                <div class="card c-cyan">
-                    <h2>3 DÍAS</h2><div class="price">$70 MXN</div>
-                    <button class="buy-btn" onclick="openM('Cuba Mods 🔵 · 3 DÍAS','Hola, quiero adquirir cuba mods🔵 de 3 dias')">COMPRAR 💳</button>
-                </div>
-                <div class="card c-cyan">
-                    <h2>7 DÍAS</h2><div class="price">$160 MXN</div>
-                    <button class="buy-btn" onclick="openM('Cuba Mods 🔵 · 7 DÍAS','Hola, quiero adquirir cuba mods🔵 de 7 días')">COMPRAR 💳</button>
-                </div>
-                <div class="card c-cyan">
-                    <h2>30 DÍAS</h2><div class="price">$350 MXN</div>
-                    <button class="buy-btn" onclick="openM('Cuba Mods 🔵 · 30 DÍAS','Hola, quiero adquirir cuba mods🔵 de Mes')">COMPRAR 💳</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <audio id="bg-audio" src="https://files.catbox.moe/olgwf0.mp3"></audio>
 
     <script>
-        // 1. PARTICLES ENGINE
-        const canvas = document.getElementById('pCanvas');
-        const ctx = canvas.getContext('2d');
-        let parts = [];
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.onresize = resize; resize();
-        class P {
-            constructor() { this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height; this.v=Math.random()*1; }
-            draw() { 
-                ctx.fillStyle="#bc13fe"; ctx.beginPath(); ctx.arc(this.x,this.y,1,0,Math.PI*2); ctx.fill();
-                this.y-=this.v; if(this.y<0) this.y=canvas.height;
-            }
-        }
-        for(let i=0;i<100;i++) parts.push(new P());
-        function anim() { ctx.clearRect(0,0,canvas.width,canvas.height); parts.forEach(p=>p.draw()); requestAnimationFrame(anim); }
-        anim();
+        const startBtn = document.getElementById('start-btn');
+        const intro = document.getElementById('intro-screen');
+        const audio = document.getElementById('bg-audio');
+        const lyrics = document.querySelectorAll('.lyric');
+        const tapId = document.getElementById('tap-indicator');
+        let step = 0;
+        let canAdvance = false;
 
-        // 2. LIGHTNING EFFECT
-        setInterval(() => {
-            if(Math.random() > 0.7) {
-                document.getElementById('lightning').classList.add('flash');
-                setTimeout(()=> document.getElementById('lightning').classList.remove('flash'), 700);
-            }
-        }, 3500);
-
-        // 3. STORE LOGIC
-        let msgToCopy = "";
-        const TIKTOK = "https://www.tiktok.com/@nexus1841";
-
-        function openM(plan, msg) {
-            document.getElementById('mPlan').innerText = plan;
-            msgToCopy = msg;
-            document.getElementById('modal').classList.add('on');
-        }
-        function closeM() { document.getElementById('modal').classList.remove('on'); }
-
-        function goToTikTok() {
-            const el = document.createElement('textarea');
-            el.value = msgToCopy; document.body.appendChild(el);
-            el.select(); document.execCommand('copy'); document.body.removeChild(el);
-
-            document.getElementById('toast').classList.add('on');
+        startBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            intro.style.opacity = '0';
             setTimeout(() => {
-                window.open(TIKTOK, "_blank");
-                document.getElementById('toast').classList.remove('on');
-                closeM();
-            }, 1200);
-        }
+                intro.style.display = 'none';
+                tapId.style.opacity = '1';
+            }, 1500);
+            audio.play();
+            canAdvance = true;
+        });
+
+        document.body.addEventListener('click', () => {
+            if (!canAdvance || step >= lyrics.length - 1) return;
+            
+            lyrics[step].classList.remove('active');
+            step++;
+            lyrics[step].classList.add('active');
+            
+            // Efecto de pulso en el fondo al tocar
+            document.querySelector('.blood-overlay').style.animation = 'none';
+            document.querySelector('.blood-overlay').offsetHeight; 
+            document.querySelector('.blood-overlay').style.animation = 'breathe 0.5s ease';
+        });
     </script>
 </body>
 </html>
