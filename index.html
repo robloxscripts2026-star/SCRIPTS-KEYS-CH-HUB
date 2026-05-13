@@ -3,183 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Strike - Gold Store</title>
+    <title>NEXUS - Blood Strike Gold</title>
     
-    <!-- Scripts de Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
-        :root {
-            --gold: #ffcc00;
-            --dark: #0a0a0a;
-            --card-bg: #1a1a1a;
-            --blood-red: #cc0000;
-        }
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--dark);
-            color: white;
-            overflow-x: hidden;
-        }
+        :root { --gold: #ffcc00; --dark: #0a0a0a; --card-bg: #1a1a1a; --blood-red: #cc0000; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: var(--dark); color: white; overflow: hidden; }
 
-        /* --- TIENDA FINGIDA --- */
-        #fake-store { padding: 20px; text-align: center; }
-        .store-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .item-card {
-            background: var(--card-bg);
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-        }
-        .gold-amount { color: var(--gold); font-weight: bold; font-size: 1.2em; }
-        .buy-btn {
-            background: var(--blood-red);
-            color: white;
-            border: none;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 6px;
-            width: 100%;
-            cursor: pointer;
-        }
+        /* --- PINNED MESSAGE --- */
+        #pinned-msg { background: #2d2a1e; border-bottom: 1px solid var(--gold); padding: 8px; font-size: 0.85em; display: none; text-align: center; color: var(--gold); z-index: 10; position: relative; }
 
-        /* --- MODALES --- */
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .window {
-            background: #222;
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid var(--gold);
-            width: 85%;
-            max-width: 350px;
-            text-align: center;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #111;
-            border: 1px solid #444;
-            color: white;
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
+        /* --- ONLINE INDICATOR --- */
+        #online-count { font-size: 0.7em; color: #00ff00; margin-left: 5px; }
 
-        /* --- CHAT REAL --- */
-        #main-app {
-            display: none;
-            height: 100vh;
-            flex-direction: column;
-            background: #0f0f0f;
-        }
-        header { background: #1a1a1a; padding: 15px; border-bottom: 1px solid #333; text-align: center; color: var(--gold); font-weight: bold; }
-        #chat-box {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .msg {
-            background: #262626;
-            padding: 10px 15px;
-            border-radius: 15px;
-            max-width: 85%;
-            align-self: flex-start;
-        }
-        .msg.admin-msg { border-left: 4px solid var(--gold); background: #2d2a1e; }
-        .msg strong { color: var(--gold); font-size: 0.9em; display: block; }
-        .msg img { max-width: 100%; border-radius: 8px; margin-top: 8px; border: 1px solid #444; }
+        /* --- CHAT ELEMENTS --- */
+        #chat-container { display: none; height: 100vh; flex-direction: column; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        #typing-indicator { font-size: 0.75em; color: #888; padding: 5px 15px; height: 20px; }
         
-        /* Estilo del botón de descarga solo para Admin */
-        .download-btn { 
-            display: inline-block; 
-            margin-top: 8px; 
-            color: var(--gold); 
-            font-size: 0.75em; 
-            text-decoration: none; 
-            border: 1px solid var(--gold);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
+        .msg { background: #262626; padding: 10px; border-radius: 12px; max-width: 85%; align-self: flex-start; position: relative; }
+        .msg.admin-msg { border-left: 4px solid var(--gold); background: #2d2a1e; box-shadow: 0 0 10px rgba(255, 204, 0, 0.2); }
+        
+        /* --- RANGOS --- */
+        .badge { font-size: 0.7em; padding: 2px 5px; border-radius: 4px; margin-left: 5px; font-weight: bold; }
+        .bronze { background: #cd7f32; color: white; }
+        .silver { background: #c0c0c0; color: black; }
+        .gold-rank { background: var(--gold); color: black; }
 
-        .input-area { background: #1a1a1a; padding: 15px; display: flex; gap: 10px; align-items: center; }
+        /* --- ANIMACIÓN ADMIN --- */
+        @keyframes particles { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100vh); opacity: 0; } }
+        .particle { position: fixed; bottom: 0; width: 5px; height: 5px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 9999; }
+
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
+        .window { background: #222; padding: 25px; border-radius: 15px; border: 1px solid var(--gold); width: 85%; max-width: 350px; text-align: center; }
+        
+        /* INPUT SIN PUNTOS (TIPO TEXTO) */
+        input[type="text"] { width: 100%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
+        .color-picker { display: flex; justify-content: center; gap: 10px; margin: 10px 0; }
+        .dot { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .active-dot { border-color: white; }
     </style>
 </head>
 <body ontouchstart="checkGesto(event)">
 
-    <!-- FACHADA -->
-    <div id="fake-store">
+    <div id="fake-store" style="padding:20px; text-align:center;">
         <h1 style="color:var(--blood-red)">BLOOD STRIKE STORE</h1>
-        <div class="store-grid">
-            <script>
-                const packs = [100, 320, 600, 1200, 3800, 4000, 5000, 6320];
-                packs.forEach(p => {
-                    document.write(`
-                        <div class="item-card">
-                            <div style="font-size:2em">💰</div>
-                            <div class="gold-amount">${p} Oro</div>
-                            <button class="buy-btn">COMPRAR</button>
-                        </div>
-                    `);
-                });
-            </script>
-        </div>
+        <p>Toca con 2 dedos para el sistema secreto</p>
     </div>
 
-    <!-- MODAL 1: CONTRASEÑA -->
+    <!-- PINNED -->
+    <div id="pinned-msg">📌 <span id="pin-text">Cargando anuncio...</span></div>
+
+    <!-- MODAL 1: CONTRASEÑA (VERIBLE) -->
     <div id="modal-pass" class="overlay">
         <div class="window">
             <h3>SISTEMA NEXUS</h3>
-            <input type="password" id="input-pass" placeholder="Contraseña de acceso">
-            <button onclick="validarClave()" class="buy-btn" style="background:var(--gold); color:black">ENTRAR</button>
+            <input type="text" id="input-pass" placeholder="Escribe la clave aquí">
+            <button onclick="validarClave()" style="background:var(--gold); padding:10px 20px; border:none; border-radius:5px;">ENTRAR</button>
         </div>
     </div>
 
-    <!-- MODAL 2: IDENTIDAD -->
+    <!-- MODAL 2: PERFIL -->
     <div id="modal-user" class="overlay">
         <div class="window">
-            <h3 id="user-status">NOMBRE:</h3>
-            <input type="text" id="input-name" placeholder="Tu alias...">
-            <button onclick="entrarAlChat()" class="buy-btn" style="background:var(--gold); color:black">CONECTAR</button>
+            <h3>TU PERFIL</h3>
+            <input type="text" id="input-name" placeholder="Tu alias">
+            <p style="font-size:0.8em">Color de nombre:</p>
+            <div class="color-picker">
+                <div class="dot" style="background:#ff5555" onclick="selectColor('#ff5555', this)"></div>
+                <div class="dot" style="background:#55ff55" onclick="selectColor('#55ff55', this)"></div>
+                <div class="dot" style="background:#5555ff" onclick="selectColor('#5555ff', this)"></div>
+                <div class="dot" style="background:#ffff55" onclick="selectColor('#ffff55', this)"></div>
+            </div>
+            <button onclick="entrarAlChat()" style="background:var(--gold); padding:10px 20px; border:none; border-radius:5px;">CONECTAR</button>
         </div>
     </div>
 
-    <!-- CHAT EN TIEMPO REAL -->
-    <div id="main-app">
-        <header id="chat-header">CONECTANDO...</header>
+    <!-- CHAT APP -->
+    <div id="chat-container">
+        <header style="background:#1a1a1a; padding:15px; display:flex; justify-content:space-between;">
+            <div>NEXUS CHAT <span id="online-count">● 0 Online</span></div>
+            <div id="user-header" style="font-size:0.8em"></div>
+        </header>
         <div id="chat-box"></div>
-        <div class="input-area">
-            <button onclick="document.getElementById('img-file').click()" style="background:none; border:none; font-size:1.5em; cursor:pointer">🖼️</button>
-            <input type="file" id="img-file" accept="image/*" style="display:none" onchange="subirImagen(event)">
-            <input type="text" id="msg-input" placeholder="Escribe un mensaje...">
-            <button onclick="enviarTexto()" class="buy-btn" style="margin:0; width:auto">ENVIAR</button>
+        <div id="typing-indicator"></div>
+        <div style="padding:15px; background:#1a1a1a; display:flex; gap:10px;">
+            <input type="text" id="msg-input" placeholder="Escribe..." oninput="isTyping()">
+            <button onclick="enviarTexto()" style="background:var(--gold); border:none; padding:10px; border-radius:5px;">ENVIAR</button>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN FIREBASE (TUS DATOS)[span_1](start_span)[span_1](end_span)
+        // CONFIG FIREBASE[span_2](start_span)[span_2](end_span)
         const firebaseConfig = {
             apiKey: "AIzaSyAzzRWHGhYVFgkWyRwfgNKc5Ql52U4xxM8",
             authDomain: "hyper-drip.firebaseapp.com",
@@ -188,108 +106,116 @@
             messagingSenderId: "1023275797824",
             appId: "1:1023275797824:web:378ce9a674db72af05fea5"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        let nickname = localStorage.getItem('nexus_user') || "";
-        let esAdmin = false;
 
-        // Gesto: 2 Dedos simultáneos[span_2](start_span)[span_2](end_span)
-        function checkGesto(e) {
-            if (e.touches.length === 2) {
-                document.getElementById('modal-pass').style.display = 'flex';
-            }
+        let nickname = localStorage.getItem('nexus_user') || "";
+        let userColor = localStorage.getItem('nexus_color') || "#ffffff";
+        let esAdmin = false;
+        let typingTimeout;
+
+        function checkGesto(e) { if (e.touches.length === 2) document.getElementById('modal-pass').style.display = 'flex'; }
+
+        function selectColor(color, el) {
+            userColor = color;
+            localStorage.setItem('nexus_color', color);
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active-dot'));
+            el.classList.add('active-dot');
         }
 
         function validarClave() {
-            const clave = document.getElementById('input-pass').value;
-            if (clave === "XDD1018") {
-                esAdmin = false;
-                pedirNombre();
-            } else if (clave === "CHRISS PLUS") {
-                esAdmin = true;
-                pedirNombre();
-            } else {
-                alert("Clave incorrecta");
-            }
+            const c = document.getElementById('input-pass').value;
+            if (c === "XDD1018") { esAdmin = false; nextStep(); }
+            else if (c === "CHRISS PLUS") { esAdmin = true; nextStep(); }
+            else { alert("Clave incorrecta"); }
         }
 
-        function pedirNombre() {
+        function nextStep() {
             document.getElementById('modal-pass').style.display = 'none';
             document.getElementById('modal-user').style.display = 'flex';
-            if (nickname) {
-                document.getElementById('user-status').innerText = "BIENVENIDO, " + nickname.toUpperCase();
-                document.getElementById('input-name').value = nickname;
-            }
         }
 
         function entrarAlChat() {
-            const n = document.getElementById('input-name').value;
-            if (n) {
-                nickname = n;
-                localStorage.setItem('nexus_user', n);
-                document.getElementById('modal-user').style.display = 'none';
-                document.getElementById('fake-store').style.display = 'none';
-                document.getElementById('main-app').style.display = 'flex';
-                document.getElementById('chat-header').innerText = `MODO: ${esAdmin ? 'ADMINISTRADOR 👑' : 'USUARIO'}`;
-                iniciarEscucha();
-            }
+            nickname = document.getElementById('input-name').value;
+            if (!nickname) return;
+            localStorage.setItem('nexus_user', nickname);
+            document.getElementById('modal-user').style.display = 'none';
+            document.getElementById('fake-store').style.display = 'none';
+            document.getElementById('chat-container').style.display = 'flex';
+            
+            // Online Count & Welcome[span_3](start_span)[span_3](end_span)
+            updateOnline(1);
+            db.collection("chat_bs").add({ u: "SISTEMA", t: `¡Bienvenido ${nickname} a NEXUS!`, system: true, time: firebase.firestore.FieldValue.serverTimestamp() });
+            
+            iniciarEscucha();
+        }
+
+        function isTyping() {
+            db.collection("status").doc(nickname).set({ typing: true });
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => { db.collection("status").doc(nickname).set({ typing: false }); }, 2000);
         }
 
         function enviarTexto() {
-            const inp = document.getElementById('msg-input');
-            if (!inp.value) return;
-            db.collection("chat_bs").add({
-                u: nickname,
-                t: inp.value,
-                a: esAdmin,
-                time: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            inp.value = "";
+            const t = document.getElementById('msg-input').value;
+            if (!t) return;
+            db.collection("chat_bs").add({ u: nickname, t: t, a: esAdmin, c: userColor, time: firebase.firestore.FieldValue.serverTimestamp() });
+            document.getElementById('msg-input').value = "";
+            if(esAdmin) spawnParticles(); // Animación admin[span_4](start_span)[span_4](end_span)
         }
 
-        function subirImagen(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    db.collection("chat_bs").add({
-                        u: nickname,
-                        img: ev.target.result,
-                        a: esAdmin,
-                        time: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                };
-                reader.readAsDataURL(file);
+        function spawnParticles() {
+            for(let i=0; i<20; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + "vw";
+                p.style.animation = `particles ${Math.random() * 2 + 1}s linear forwards`;
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 3000);
             }
         }
 
+        function getBadge(count) {
+            if (count > 50) return '<span class="badge gold-rank">ORO</span>';
+            if (count > 20) return '<span class="badge silver">PLATA</span>';
+            if (count > 5) return '<span class="badge bronze">BRONCE</span>';
+            return '';
+        }
+
         function iniciarEscucha() {
+            // Escuchar Mensajes
             db.collection("chat_bs").orderBy("time", "asc").onSnapshot(snap => {
                 const box = document.getElementById('chat-box');
                 box.innerHTML = "";
                 snap.forEach(doc => {
                     const d = doc.data();
-                    const msgDiv = document.createElement('div');
-                    msgDiv.className = `msg ${d.a ? 'admin-msg' : ''}`;
+                    const div = document.createElement('div');
+                    div.className = `msg ${d.a ? 'admin-msg' : ''}`;
+                    div.style.alignSelf = d.u === nickname ? 'flex-end' : 'flex-start';
                     
-                    let content = `<strong>${d.u}${d.a ? ' 👑' : ''}</strong>`;
-                    if (d.t) content += `<span>${d.t}</span>`;
-                    
-                    if (d.img) {
-                        content += `<img src="${d.img}">`;
-                        // LÓGICA CLAVE: Solo el Admin actual puede ver el botón de descarga[span_3](start_span)[span_3](end_span)
-                        if (esAdmin) {
-                            content += `<a href="${d.img}" download="NEXUS_${Date.now()}.png" class="download-btn">⬇️ DESCARGAR (ADMIN)</a>`;
-                        }
-                    }
-                    
-                    msgDiv.innerHTML = content;
-                    box.appendChild(msgDiv);
+                    // Lógica de Reacción Toque Largo[span_5](start_span)[span_5](end_span)
+                    div.oncontextmenu = (e) => { e.preventDefault(); alert("Reacción: 🔥"); };
+
+                    div.innerHTML = `<strong style="color:${d.c || '#fff'}">${d.u}</strong> ${getBadge(10)}<br>${d.t}`;
+                    box.appendChild(div);
                 });
                 box.scrollTop = box.scrollHeight;
             });
+
+            // Online Indicator[span_6](start_span)[span_6](end_span)
+            db.collection("status").onSnapshot(snap => {
+                let count = 0;
+                let typing = [];
+                snap.forEach(doc => {
+                    count++;
+                    if(doc.data().typing && doc.id !== nickname) typing.push(doc.id);
+                });
+                document.getElementById('online-count').innerText = `● ${count} Online`;
+                document.getElementById('typing-indicator').innerText = typing.length > 0 ? `${typing.join(", ")} está escribiendo...` : "";
+            });
         }
+
+        function updateOnline(val) { /* Lógica para incrementar contador en DB */ }
     </script>
 </body>
 </html>
