@@ -2,97 +2,108 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS - Blood Strike Gold</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Blood Strike - Official Top-Up</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
-        :root { --gold: #ffcc00; --dark: #0a0a0a; --card-bg: #1a1a1a; --blood-red: #cc0000; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: var(--dark); color: white; overflow: hidden; }
+        :root { --gold: #ffcc00; --dark: #050505; --card-bg: #111111; --blood: #ff0000; }
+        body { margin: 0; font-family: 'Oswald', sans-serif; background-color: var(--dark); color: white; overflow: hidden; }
 
-        /* --- PINNED MESSAGE --- */
-        #pinned-msg { background: #2d2a1e; border-bottom: 1px solid var(--gold); padding: 8px; font-size: 0.85em; display: none; text-align: center; color: var(--gold); z-index: 10; position: relative; }
+        /* --- TIENDA PRO (LA FACHADA) --- */
+        #store-front { height: 100vh; overflow-y: auto; padding: 20px; text-align: center; }
+        .banner { width: 100%; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 600px; margin: 0 auto; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid #222; position: relative; transition: 0.3s; }
+        .card:active { transform: scale(0.95); border-color: var(--blood); }
+        .gold-icon { font-size: 2.5em; margin-bottom: 10px; display: block; }
+        .price { color: var(--gold); font-weight: bold; font-size: 1.1em; }
+        .buy-btn { background: var(--blood); color: white; border: none; padding: 8px; width: 100%; border-radius: 5px; margin-top: 10px; font-weight: bold; }
 
-        /* --- ONLINE INDICATOR --- */
-        #online-count { font-size: 0.7em; color: #00ff00; margin-left: 5px; }
-
-        /* --- CHAT ELEMENTS --- */
-        #chat-container { display: none; height: 100vh; flex-direction: column; }
-        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        #typing-indicator { font-size: 0.75em; color: #888; padding: 5px 15px; height: 20px; }
+        /* --- INTERFAZ NEXUS (EL SECRETO) --- */
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
+        .win { background: #151515; padding: 30px; border-radius: 20px; border: 1px solid var(--gold); width: 85%; max-width: 350px; text-align: center; box-shadow: 0 0 30px rgba(255, 204, 0, 0.1); }
+        input[type="text"] { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #333; color: var(--gold); border-radius: 8px; text-align: center; font-size: 1.1em; outline: none; }
         
-        .msg { background: #262626; padding: 10px; border-radius: 12px; max-width: 85%; align-self: flex-start; position: relative; }
-        .msg.admin-msg { border-left: 4px solid var(--gold); background: #2d2a1e; box-shadow: 0 0 10px rgba(255, 204, 0, 0.2); }
+        /* --- CHAT PREMIUM --- */
+        #nexus-app { display: none; height: 100vh; flex-direction: column; background: #080808; }
+        header { background: #111; padding: 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        #pin-bar { background: linear-gradient(90deg, #1a1a1a, #2d2a1e); color: var(--gold); padding: 10px; font-size: 0.8em; text-align: center; border-bottom: 1px solid var(--gold); }
+        #chat-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
         
-        /* --- RANGOS --- */
-        .badge { font-size: 0.7em; padding: 2px 5px; border-radius: 4px; margin-left: 5px; font-weight: bold; }
-        .bronze { background: #cd7f32; color: white; }
-        .silver { background: #c0c0c0; color: black; }
-        .gold-rank { background: var(--gold); color: black; }
-
-        /* --- ANIMACIÓN ADMIN --- */
-        @keyframes particles { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100vh); opacity: 0; } }
-        .particle { position: fixed; bottom: 0; width: 5px; height: 5px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 9999; }
-
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-        .window { background: #222; padding: 25px; border-radius: 15px; border: 1px solid var(--gold); width: 85%; max-width: 350px; text-align: center; }
+        .m { padding: 12px 16px; border-radius: 18px; max-width: 80%; font-size: 0.95em; line-height: 1.4; position: relative; animation: slideIn 0.3s ease; }
+        .m-user { align-self: flex-end; background: #222; border-bottom-right-radius: 2px; }
+        .m-admin { align-self: flex-start; background: #2d2a1e; border-left: 4px solid var(--gold); border-bottom-left-radius: 2px; }
         
-        /* INPUT SIN PUNTOS (TIPO TEXTO) */
-        input[type="text"] { width: 100%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
-        .color-picker { display: flex; justify-content: center; gap: 10px; margin: 10px 0; }
-        .dot { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
-        .active-dot { border-color: white; }
+        .u-name { font-size: 0.75em; font-weight: bold; margin-bottom: 4px; display: block; opacity: 0.8; }
+        .crown { color: var(--gold); margin-left: 4px; }
+        
+        /* --- ANIMACIONES --- */
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .part { position: fixed; bottom: 0; width: 4px; height: 4px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 2000; }
     </style>
 </head>
-<body ontouchstart="checkGesto(event)">
+<body ontouchstart="gestoSecreto(event)">
 
-    <div id="fake-store" style="padding:20px; text-align:center;">
-        <h1 style="color:var(--blood-red)">BLOOD STRIKE STORE</h1>
-        <p>Toca con 2 dedos para el sistema secreto</p>
-    </div>
-
-    <!-- PINNED -->
-    <div id="pinned-msg">📌 <span id="pin-text">Cargando anuncio...</span></div>
-
-    <!-- MODAL 1: CONTRASEÑA (VERIBLE) -->
-    <div id="modal-pass" class="overlay">
-        <div class="window">
-            <h3>SISTEMA NEXUS</h3>
-            <input type="text" id="input-pass" placeholder="Escribe la clave aquí">
-            <button onclick="validarClave()" style="background:var(--gold); padding:10px 20px; border:none; border-radius:5px;">ENTRAR</button>
+    <!-- LA FACHADA (TIENDA) -->
+    <div id="store-front">
+        <h2 style="letter-spacing: 2px;">TOP-UP CENTER</h2>
+        <div class="grid">
+            <script>
+                const amounts = [100, 500, 1200, 2500, 5000, 10000];
+                amounts.forEach(a => {
+                    document.write(`
+                        <div class="card">
+                            <span class="gold-icon">💎</span>
+                            <div style="font-weight:bold">${a} Gold</div>
+                            <div class="price">$${(a/100).toFixed(2)} USD</div>
+                            <button class="buy-btn">PURCHASE</button>
+                        </div>
+                    `);
+                });
+            </script>
         </div>
     </div>
 
-    <!-- MODAL 2: PERFIL -->
-    <div id="modal-user" class="overlay">
-        <div class="window">
-            <h3>TU PERFIL</h3>
-            <input type="text" id="input-name" placeholder="Tu alias">
-            <p style="font-size:0.8em">Color de nombre:</p>
-            <div class="color-picker">
-                <div class="dot" style="background:#ff5555" onclick="selectColor('#ff5555', this)"></div>
-                <div class="dot" style="background:#55ff55" onclick="selectColor('#55ff55', this)"></div>
-                <div class="dot" style="background:#5555ff" onclick="selectColor('#5555ff', this)"></div>
-                <div class="dot" style="background:#ffff55" onclick="selectColor('#ffff55', this)"></div>
+    <!-- ACCESO INVISIBLE -->
+    <div id="modal-lock" class="overlay">
+        <div class="win">
+            <h2 style="color:var(--gold); margin:0;">NEXUS CORE</h2>
+            <p style="font-size:0.8em; color:#666;">ACCESS PROTOCOL REQUIRED</p>
+            <input type="text" id="pass-key" placeholder="IDENTIFIER">
+            <button onclick="validar()" class="buy-btn" style="background:var(--gold); color:black">VERIFY</button>
+        </div>
+    </div>
+
+    <!-- SELECCIÓN DE PERFIL -->
+    <div id="modal-profile" class="overlay">
+        <div class="win">
+            <h3>USER PROFILE</h3>
+            <input type="text" id="user-alias" placeholder="NICKNAME">
+            <div style="display:flex; justify-content:center; gap:10px; margin:15px 0;">
+                <div onclick="setCol('#ff5555')" style="background:#ff5555; width:30px; height:30px; border-radius:50%; cursor:pointer"></div>
+                <div onclick="setCol('#55ff55')" style="background:#55ff55; width:30px; height:30px; border-radius:50%; cursor:pointer"></div>
+                <div onclick="setCol('#5555ff')" style="background:#5555ff; width:30px; height:30px; border-radius:50%; cursor:pointer"></div>
+                <div onclick="setCol('#ffcc00')" style="background:#ffcc00; width:30px; height:30px; border-radius:50%; cursor:pointer"></div>
             </div>
-            <button onclick="entrarAlChat()" style="background:var(--gold); padding:10px 20px; border:none; border-radius:5px;">CONECTAR</button>
+            <button onclick="conectar()" class="buy-btn" style="background:var(--gold); color:black">INITIALIZE</button>
         </div>
     </div>
 
-    <!-- CHAT APP -->
-    <div id="chat-container">
-        <header style="background:#1a1a1a; padding:15px; display:flex; justify-content:space-between;">
-            <div>NEXUS CHAT <span id="online-count">● 0 Online</span></div>
-            <div id="user-header" style="font-size:0.8em"></div>
+    <!-- APP FINAL -->
+    <div id="nexus-app">
+        <div id="pin-bar">📌 BIENVENIDO A LA RED PRIVADA DE NEXUS HUB</div>
+        <header>
+            <div style="color:var(--gold); font-weight:bold;">NEXUS <span id="online" style="color:#0f0; font-size:0.7em;">● 0</span></div>
+            <div id="typing" style="font-size:0.7em; color:#666;"></div>
         </header>
-        <div id="chat-box"></div>
-        <div id="typing-indicator"></div>
-        <div style="padding:15px; background:#1a1a1a; display:flex; gap:10px;">
-            <input type="text" id="msg-input" placeholder="Escribe..." oninput="isTyping()">
-            <button onclick="enviarTexto()" style="background:var(--gold); border:none; padding:10px; border-radius:5px;">ENVIAR</button>
+        <div id="chat-area"></div>
+        <div style="padding:15px; background:#111; display:flex; gap:10px;">
+            <input type="text" id="msg" placeholder="Transmisión..." oninput="handleTyping()">
+            <button onclick="send()" class="buy-btn" style="margin:0; width:80px;">SEND</button>
         </div>
     </div>
 
@@ -109,113 +120,88 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        let nickname = localStorage.getItem('nexus_user') || "";
-        let userColor = localStorage.getItem('nexus_color') || "#ffffff";
-        let esAdmin = false;
-        let typingTimeout;
+        let nick = localStorage.getItem('n_u') || "";
+        let color = localStorage.getItem('n_c') || "#fff";
+        let isAdmin = false;
+        let tOut;
 
-        function checkGesto(e) { if (e.touches.length === 2) document.getElementById('modal-pass').style.display = 'flex'; }
+        // GESTO SECRETO (2 DEDOS) - SIN TEXTO EN PANTALLA[span_3](start_span)[span_3](end_span)
+        function gestoSecreto(e) { if(e.touches.length === 2) document.getElementById('modal-lock').style.display = 'flex'; }
 
-        function selectColor(color, el) {
-            userColor = color;
-            localStorage.setItem('nexus_color', color);
-            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active-dot'));
-            el.classList.add('active-dot');
+        function setCol(c) { color = c; localStorage.setItem('n_c', c); }
+
+        function validar() {
+            const k = document.getElementById('pass-key').value;
+            if(k === "XDD1018") { isAdmin = false; showProfile(); }
+            else if(k === "CHRISS PLUS") { isAdmin = true; showProfile(); }
+            else { document.getElementById('modal-lock').style.display = 'none'; }
         }
 
-        function validarClave() {
-            const c = document.getElementById('input-pass').value;
-            if (c === "XDD1018") { esAdmin = false; nextStep(); }
-            else if (c === "CHRISS PLUS") { esAdmin = true; nextStep(); }
-            else { alert("Clave incorrecta"); }
+        function showProfile() {
+            document.getElementById('modal-lock').style.display = 'none';
+            document.getElementById('modal-profile').style.display = 'flex';
+            if(nick) document.getElementById('user-alias').value = nick;
         }
 
-        function nextStep() {
-            document.getElementById('modal-pass').style.display = 'none';
-            document.getElementById('modal-user').style.display = 'flex';
-        }
-
-        function entrarAlChat() {
-            nickname = document.getElementById('input-name').value;
-            if (!nickname) return;
-            localStorage.setItem('nexus_user', nickname);
-            document.getElementById('modal-user').style.display = 'none';
-            document.getElementById('fake-store').style.display = 'none';
-            document.getElementById('chat-container').style.display = 'flex';
+        function conectar() {
+            nick = document.getElementById('user-alias').value;
+            if(!nick) return;
+            localStorage.setItem('n_u', nick);
+            document.getElementById('modal-profile').style.display = 'none';
+            document.getElementById('store-front').style.display = 'none';
+            document.getElementById('nexus-app').style.display = 'flex';
             
-            // Online Count & Welcome[span_3](start_span)[span_3](end_span)
-            updateOnline(1);
-            db.collection("chat_bs").add({ u: "SISTEMA", t: `¡Bienvenido ${nickname} a NEXUS!`, system: true, time: firebase.firestore.FieldValue.serverTimestamp() });
-            
-            iniciarEscucha();
+            // Mensaje de bienvenida del sistema[span_4](start_span)[span_4](end_span)
+            db.collection("chat_bs").add({ u: "CORE", t: `Protocolo iniciado para ${nick.toUpperCase()}`, s: true, time: firebase.firestore.FieldValue.serverTimestamp() });
+            init();
         }
 
-        function isTyping() {
-            db.collection("status").doc(nickname).set({ typing: true });
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => { db.collection("status").doc(nickname).set({ typing: false }); }, 2000);
+        function handleTyping() {
+            db.collection("status").doc(nick).set({ t: true });
+            clearTimeout(tOut);
+            tOut = setTimeout(() => db.collection("status").doc(nick).set({ t: false }), 2000);
         }
 
-        function enviarTexto() {
-            const t = document.getElementById('msg-input').value;
-            if (!t) return;
-            db.collection("chat_bs").add({ u: nickname, t: t, a: esAdmin, c: userColor, time: firebase.firestore.FieldValue.serverTimestamp() });
-            document.getElementById('msg-input').value = "";
-            if(esAdmin) spawnParticles(); // Animación admin[span_4](start_span)[span_4](end_span)
+        function send() {
+            const m = document.getElementById('msg').value;
+            if(!m) return;
+            db.collection("chat_bs").add({ u: nick, t: m, a: isAdmin, c: color, time: firebase.firestore.FieldValue.serverTimestamp() });
+            document.getElementById('msg').value = "";
+            if(isAdmin) particles(); // Efecto Oro Admin[span_5](start_span)[span_5](end_span)
         }
 
-        function spawnParticles() {
-            for(let i=0; i<20; i++) {
+        function particles() {
+            for(let i=0; i<30; i++) {
                 const p = document.createElement('div');
-                p.className = 'particle';
+                p.className = 'part';
                 p.style.left = Math.random() * 100 + "vw";
-                p.style.animation = `particles ${Math.random() * 2 + 1}s linear forwards`;
+                p.style.animation = `slideIn ${Math.random()*2+1}s linear reverse`;
                 document.body.appendChild(p);
-                setTimeout(() => p.remove(), 3000);
+                setTimeout(() => p.remove(), 2000);
             }
         }
 
-        function getBadge(count) {
-            if (count > 50) return '<span class="badge gold-rank">ORO</span>';
-            if (count > 20) return '<span class="badge silver">PLATA</span>';
-            if (count > 5) return '<span class="badge bronze">BRONCE</span>';
-            return '';
-        }
-
-        function iniciarEscucha() {
-            // Escuchar Mensajes
+        function init() {
             db.collection("chat_bs").orderBy("time", "asc").onSnapshot(snap => {
-                const box = document.getElementById('chat-box');
-                box.innerHTML = "";
+                const area = document.getElementById('chat-area');
+                area.innerHTML = "";
                 snap.forEach(doc => {
                     const d = doc.data();
                     const div = document.createElement('div');
-                    div.className = `msg ${d.a ? 'admin-msg' : ''}`;
-                    div.style.alignSelf = d.u === nickname ? 'flex-end' : 'flex-start';
-                    
-                    // Lógica de Reacción Toque Largo[span_5](start_span)[span_5](end_span)
-                    div.oncontextmenu = (e) => { e.preventDefault(); alert("Reacción: 🔥"); };
-
-                    div.innerHTML = `<strong style="color:${d.c || '#fff'}">${d.u}</strong> ${getBadge(10)}<br>${d.t}`;
-                    box.appendChild(div);
+                    div.className = `m ${d.a ? 'm-admin' : 'm-user'}`;
+                    div.innerHTML = `<span class="u-name" style="color:${d.c}">${d.u}${d.a ? '<span class="crown">👑</span>' : ''}</span>${d.t}`;
+                    area.appendChild(div);
                 });
-                box.scrollTop = box.scrollHeight;
+                area.scrollTop = area.scrollHeight;
             });
 
-            // Online Indicator[span_6](start_span)[span_6](end_span)
             db.collection("status").onSnapshot(snap => {
-                let count = 0;
-                let typing = [];
-                snap.forEach(doc => {
-                    count++;
-                    if(doc.data().typing && doc.id !== nickname) typing.push(doc.id);
-                });
-                document.getElementById('online-count').innerText = `● ${count} Online`;
-                document.getElementById('typing-indicator').innerText = typing.length > 0 ? `${typing.join(", ")} está escribiendo...` : "";
+                let on = 0; let typing = [];
+                snap.forEach(doc => { on++; if(doc.data().t && doc.id !== nick) typing.push(doc.id); });
+                document.getElementById('online').innerText = `● ${on}`;
+                document.getElementById('typing').innerText = typing.length > 0 ? "Alguien está escribiendo..." : "";
             });
         }
-
-        function updateOnline(val) { /* Lógica para incrementar contador en DB */ }
     </script>
 </body>
 </html>
