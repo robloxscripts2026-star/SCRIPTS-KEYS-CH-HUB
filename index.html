@@ -3,112 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Blood Strike - Official Top-Up</title>
+    <title>Blood Strike - Top-Up Official</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
-        :root { --gold: #ffcc00; --dark: #050505; --card-bg: #111111; --blood: #ff0000; }
-        body { margin: 0; font-family: 'Oswald', sans-serif; background-color: var(--dark); color: white; overflow: hidden; }
+        :root { --gold: #ffcc00; --dark: #050505; --card-bg: #111; --blood: #ff0000; }
+        body { margin: 0; font-family: 'Oswald', sans-serif; background: var(--dark); color: white; overflow: hidden; }
 
-        /* --- TIENDA PRO (LA FACHADA) --- */
-        #store-front { height: 100vh; overflow-y: auto; padding: 20px; text-align: center; }
-        .banner { width: 100%; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 600px; margin: 0 auto; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid #222; position: relative; transition: 0.3s; }
-        .card:active { transform: scale(0.95); border-color: var(--blood); }
-        .gold-icon { font-size: 2.5em; margin-bottom: 10px; display: block; }
-        .price { color: var(--gold); font-weight: bold; font-size: 1.1em; }
-        .buy-btn { background: var(--blood); color: white; border: none; padding: 8px; width: 100%; border-radius: 5px; margin-top: 10px; font-weight: bold; }
+        /* --- TIENDA INVISIBLE --- */
+        #store { height: 100vh; overflow-y: auto; padding: 20px; text-align: center; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 500px; margin: 0 auto; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #222; }
 
-        /* --- INTERFAZ NEXUS (EL SECRETO) --- */
+        /* --- MODALES --- */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
-        .win { background: #151515; padding: 30px; border-radius: 20px; border: 1px solid var(--gold); width: 85%; max-width: 350px; text-align: center; box-shadow: 0 0 30px rgba(255, 204, 0, 0.1); }
-        input[type="text"] { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #333; color: var(--gold); border-radius: 8px; text-align: center; font-size: 1.1em; outline: none; }
-        
-        /* --- CHAT PREMIUM --- */
-        #nexus-app { display: none; height: 100vh; flex-direction: column; background: #080808; }
-        header { background: #111; padding: 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        #pin-bar { background: linear-gradient(90deg, #1a1a1a, #2d2a1e); color: var(--gold); padding: 10px; font-size: 0.8em; text-align: center; border-bottom: 1px solid var(--gold); }
+        .win { background: #151515; padding: 30px; border-radius: 20px; border: 1px solid var(--gold); width: 85%; max-width: 350px; text-align: center; }
+        input[type="text"] { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: var(--gold); border-radius: 8px; text-align: center; }
+
+        /* --- CHAT --- */
+        #nexus { display: none; height: 100vh; flex-direction: column; background: #080808; }
         #chat-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
         
-        .m { padding: 12px 16px; border-radius: 18px; max-width: 80%; font-size: 0.95em; line-height: 1.4; position: relative; animation: slideIn 0.3s ease; }
-        .m-user { align-self: flex-end; background: #222; border-bottom-right-radius: 2px; }
-        .m-admin { align-self: flex-start; background: #2d2a1e; border-left: 4px solid var(--gold); border-bottom-left-radius: 2px; }
+        .m { padding: 12px; border-radius: 15px; max-width: 80%; position: relative; background: #222; align-self: flex-start; }
+        .m-admin { border-left: 4px solid var(--gold); background: #2d2a1e; }
+        .m img { max-width: 100%; border-radius: 10px; margin-top: 8px; display: block; }
         
-        .u-name { font-size: 0.75em; font-weight: bold; margin-bottom: 4px; display: block; opacity: 0.8; }
-        .crown { color: var(--gold); margin-left: 4px; }
+        /* BOTÓN DESCARGA (SOLO ADMIN) */
+        .dl-btn { display: inline-block; margin-top: 8px; color: var(--gold); font-size: 0.7em; text-decoration: none; border: 1px solid var(--gold); padding: 4px 8px; border-radius: 4px; font-weight: bold; }
         
-        /* --- ANIMACIONES --- */
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* REACCIONES */
+        .reac-bar { display: none; position: absolute; top: -30px; right: 0; background: #333; border-radius: 20px; padding: 5px 10px; gap: 10px; z-index: 5; }
+        .m:active .reac-bar { display: flex; } /* Toque largo visual */
+
+        .u-name { font-size: 0.75em; font-weight: bold; margin-bottom: 4px; display: block; }
         .part { position: fixed; bottom: 0; width: 4px; height: 4px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 2000; }
     </style>
 </head>
-<body ontouchstart="gestoSecreto(event)">
+<body ontouchstart="gesto(event)">
 
-    <!-- LA FACHADA (TIENDA) -->
-    <div id="store-front">
-        <h2 style="letter-spacing: 2px;">TOP-UP CENTER</h2>
+    <!-- FACHADA -->
+    <div id="store">
+        <h2>TOP-UP CENTER</h2>
         <div class="grid">
-            <script>
-                const amounts = [100, 500, 1200, 2500, 5000, 10000];
-                amounts.forEach(a => {
-                    document.write(`
-                        <div class="card">
-                            <span class="gold-icon">💎</span>
-                            <div style="font-weight:bold">${a} Gold</div>
-                            <div class="price">$${(a/100).toFixed(2)} USD</div>
-                            <button class="buy-btn">PURCHASE</button>
-                        </div>
-                    `);
-                });
-            </script>
+            <div class="card">💰 100 Gold<br><button style="background:var(--blood); border:none; color:white; width:100%; margin-top:5px;">$0.99</button></div>
+            <div class="card">💰 500 Gold<br><button style="background:var(--blood); border:none; color:white; width:100%; margin-top:5px;">$4.99</button></div>
         </div>
     </div>
 
-    <!-- ACCESO INVISIBLE -->
+    <!-- ACCESO -->
     <div id="modal-lock" class="overlay">
         <div class="win">
-            <h2 style="color:var(--gold); margin:0;">NEXUS CORE</h2>
-            <p style="font-size:0.8em; color:#666;">ACCESS PROTOCOL REQUIRED</p>
-            <input type="text" id="pass-key" placeholder="IDENTIFIER">
-            <button onclick="validar()" class="buy-btn" style="background:var(--gold); color:black">VERIFY</button>
+            <h2 style="color:var(--gold)">NEXUS CORE</h2>
+            <input type="text" id="pass-key" placeholder="IDENTIFICADOR">
+            <button onclick="validar()" style="background:var(--gold); border:none; padding:10px 20px; border-radius:5px; font-weight:bold;">VERIFICAR</button>
         </div>
     </div>
 
-    <!-- SELECCIÓN DE PERFIL -->
+    <!-- PERFIL -->
     <div id="modal-profile" class="overlay">
         <div class="win">
-            <h3>USER PROFILE</h3>
-            <input type="text" id="user-alias" placeholder="NICKNAME">
-            <div style="display:flex; justify-content:center; gap:10px; margin:15px 0;">
-                <div onclick="setCol('#ff5555')" style="background:#ff5555; width:30px; height:30px; border-radius:50%; cursor:pointer"></div>
-                <div onclick="setCol('#55ff55')" style="background:#55ff55; width:30px; height:30px; border-radius:50%; cursor:pointer"></div>
-                <div onclick="setCol('#5555ff')" style="background:#5555ff; width:30px; height:30px; border-radius:50%; cursor:pointer"></div>
-                <div onclick="setCol('#ffcc00')" style="background:#ffcc00; width:30px; height:30px; border-radius:50%; cursor:pointer"></div>
-            </div>
-            <button onclick="conectar()" class="buy-btn" style="background:var(--gold); color:black">INITIALIZE</button>
+            <h3>PERFIL DE USUARIO</h3>
+            <input type="text" id="user-alias" placeholder="TU NICKNAME">
+            <button onclick="conectar()" style="background:var(--gold); border:none; padding:10px 20px; border-radius:5px; font-weight:bold;">INICIAR</button>
         </div>
     </div>
 
     <!-- APP FINAL -->
-    <div id="nexus-app">
-        <div id="pin-bar">📌 BIENVENIDO A LA RED PRIVADA DE NEXUS HUB</div>
-        <header>
-            <div style="color:var(--gold); font-weight:bold;">NEXUS <span id="online" style="color:#0f0; font-size:0.7em;">● 0</span></div>
+    <div id="nexus">
+        <header style="padding:15px; background:#111; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
+            <div style="color:var(--gold); font-weight:bold;">NEXUS HUB <span id="online" style="color:#0f0; font-size:0.7em;">● 0</span></div>
             <div id="typing" style="font-size:0.7em; color:#666;"></div>
         </header>
         <div id="chat-area"></div>
-        <div style="padding:15px; background:#111; display:flex; gap:10px;">
-            <input type="text" id="msg" placeholder="Transmisión..." oninput="handleTyping()">
-            <button onclick="send()" class="buy-btn" style="margin:0; width:80px;">SEND</button>
+        <div style="padding:15px; background:#111; display:flex; gap:10px; align-items:center;">
+            <button onclick="document.getElementById('img-up').click()" style="background:none; border:none; font-size:1.5em; cursor:pointer;">🖼️</button>
+            <input type="file" id="img-up" accept="image/*" style="display:none" onchange="subirImg(event)">
+            <input type="text" id="msg" placeholder="Mensaje..." oninput="isTyping()" style="margin:0;">
+            <button onclick="send()" style="background:var(--blood); border:none; padding:10px; border-radius:5px; color:white; font-weight:bold;">SEND</button>
         </div>
     </div>
 
     <script>
-        // CONFIG FIREBASE[span_2](start_span)[span_2](end_span)
         const firebaseConfig = {
             apiKey: "AIzaSyAzzRWHGhYVFgkWyRwfgNKc5Ql52U4xxM8",
             authDomain: "hyper-drip.firebaseapp.com",
@@ -121,23 +98,19 @@
         const db = firebase.firestore();
 
         let nick = localStorage.getItem('n_u') || "";
-        let color = localStorage.getItem('n_c') || "#fff";
         let isAdmin = false;
         let tOut;
 
-        // GESTO SECRETO (2 DEDOS) - SIN TEXTO EN PANTALLA[span_3](start_span)[span_3](end_span)
-        function gestoSecreto(e) { if(e.touches.length === 2) document.getElementById('modal-lock').style.display = 'flex'; }
-
-        function setCol(c) { color = c; localStorage.setItem('n_c', c); }
+        function gesto(e) { if(e.touches.length === 2) document.getElementById('modal-lock').style.display = 'flex'; }
 
         function validar() {
             const k = document.getElementById('pass-key').value;
-            if(k === "XDD1018") { isAdmin = false; showProfile(); }
-            else if(k === "CHRISS PLUS") { isAdmin = true; showProfile(); }
+            if(k === "XDD1018") { isAdmin = false; next(); }
+            else if(k === "CHRISS PLUS") { isAdmin = true; next(); }
             else { document.getElementById('modal-lock').style.display = 'none'; }
         }
 
-        function showProfile() {
+        function next() {
             document.getElementById('modal-lock').style.display = 'none';
             document.getElementById('modal-profile').style.display = 'flex';
             if(nick) document.getElementById('user-alias').value = nick;
@@ -148,15 +121,12 @@
             if(!nick) return;
             localStorage.setItem('n_u', nick);
             document.getElementById('modal-profile').style.display = 'none';
-            document.getElementById('store-front').style.display = 'none';
-            document.getElementById('nexus-app').style.display = 'flex';
-            
-            // Mensaje de bienvenida del sistema[span_4](start_span)[span_4](end_span)
-            db.collection("chat_bs").add({ u: "CORE", t: `Protocolo iniciado para ${nick.toUpperCase()}`, s: true, time: firebase.firestore.FieldValue.serverTimestamp() });
+            document.getElementById('store').style.display = 'none';
+            document.getElementById('nexus').style.display = 'flex';
             init();
         }
 
-        function handleTyping() {
+        function isTyping() {
             db.collection("status").doc(nick).set({ t: true });
             clearTimeout(tOut);
             tOut = setTimeout(() => db.collection("status").doc(nick).set({ t: false }), 2000);
@@ -165,12 +135,22 @@
         function send() {
             const m = document.getElementById('msg').value;
             if(!m) return;
-            db.collection("chat_bs").add({ u: nick, t: m, a: isAdmin, c: color, time: firebase.firestore.FieldValue.serverTimestamp() });
+            db.collection("chat_bs").add({ u: nick, t: m, a: isAdmin, time: firebase.firestore.FieldValue.serverTimestamp() });
             document.getElementById('msg').value = "";
-            if(isAdmin) particles(); // Efecto Oro Admin[span_5](start_span)[span_5](end_span)
+            if(isAdmin) anim();
         }
 
-        function particles() {
+        function subirImg(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                db.collection("chat_bs").add({ u: nick, img: ev.target.result, a: isAdmin, time: firebase.firestore.FieldValue.serverTimestamp() });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function anim() {
             for(let i=0; i<30; i++) {
                 const p = document.createElement('div');
                 p.className = 'part';
@@ -188,18 +168,32 @@
                 snap.forEach(doc => {
                     const d = doc.data();
                     const div = document.createElement('div');
-                    div.className = `m ${d.a ? 'm-admin' : 'm-user'}`;
-                    div.innerHTML = `<span class="u-name" style="color:${d.c}">${d.u}${d.a ? '<span class="crown">👑</span>' : ''}</span>${d.t}`;
+                    div.className = `m ${d.a ? 'm-admin' : ''}`;
+                    
+                    // REACCIONES (TOQUE LARGO/HOVER)[span_1](start_span)[span_1](end_span)
+                    let html = `<div class="reac-bar">🔥 ❤️ 👍</div>`;
+                    html += `<span class="u-name">${d.u}${d.a ? ' 👑' : ''}</span>`;
+                    if(d.t) html += `<span>${d.t}</span>`;
+                    
+                    if(d.img) {
+                        html += `<img src="${d.img}">`;
+                        // BOTÓN SOLO PARA TI (ADMIN)[span_2](start_span)[span_2](end_span)
+                        if(isAdmin) {
+                            html += `<a href="${d.img}" download="NEXUS_${Date.now()}.png" class="dl-btn">⬇️ DESCARGAR (ADMIN)</a>`;
+                        }
+                    }
+                    
+                    div.innerHTML = html;
                     area.appendChild(div);
                 });
                 area.scrollTop = area.scrollHeight;
             });
 
             db.collection("status").onSnapshot(snap => {
-                let on = 0; let typing = [];
-                snap.forEach(doc => { on++; if(doc.data().t && doc.id !== nick) typing.push(doc.id); });
+                let on = 0; let ty = [];
+                snap.forEach(doc => { on++; if(doc.data().t && doc.id !== nick) ty.push(doc.id); });
                 document.getElementById('online').innerText = `● ${on}`;
-                document.getElementById('typing').innerText = typing.length > 0 ? "Alguien está escribiendo..." : "";
+                document.getElementById('typing').innerText = ty.length > 0 ? "Alguien está escribiendo..." : "";
             });
         }
     </script>
