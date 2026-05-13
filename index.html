@@ -3,223 +3,638 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Blood Strike - Top-Up Center</title>
+    <title>Blood Strike - Centro de Recarga</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
-        :root { --gold: #ffcc00; --dark: #050505; --card-bg: #111; --blood: #ff0000; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; overflow: hidden; touch-action: manipulation; }
-
-        /* --- INTERFAZ DE TIENDA (FACHADA) --- */
-        #store { height: 100vh; overflow-y: auto; padding: 20px; text-align: center; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 500px; margin: 0 auto; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #222; }
-        .buy-btn { background: var(--blood); border: none; color: white; width: 100%; margin-top: 10px; padding: 8px; border-radius: 5px; font-weight: bold; }
-
-        /* --- SISTEMA SECRETO --- */
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(15px); }
-        .win { background: #151515; padding: 30px; border-radius: 20px; border: 1px solid var(--gold); width: 85%; max-width: 350px; text-align: center; }
-        input[type="text"] { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: var(--gold); border-radius: 8px; text-align: center; font-size: 1em; }
-
-        /* --- CHAT NEXUS --- */
-        #nexus { display: none; height: 100vh; flex-direction: column; background: #080808; }
-        header { padding: 15px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        #chat-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        :root { 
+            --gold: #ffd700; 
+            --gold-dark: #cc9900;
+            --dark: #0a0a0a; 
+            --card-bg: #1a1a1a; 
+            --blood: #ff0000; 
+        }
         
-        .m { padding: 12px; border-radius: 15px; max-width: 80%; position: relative; background: #222; align-self: flex-start; border: 1px solid #333; }
-        .m-admin { border-left: 4px solid var(--gold); background: #2d2a1e; border-color: var(--gold); }
-        .m img { max-width: 100%; border-radius: 10px; margin-top: 8px; display: block; border: 1px solid #444; }
+        * { box-sizing: border-box; }
         
-        .u-name { font-size: 0.75em; font-weight: bold; margin-bottom: 4px; display: block; color: var(--gold); }
-        .dl-btn { display: inline-block; margin-top: 10px; color: var(--gold); font-size: 0.75em; text-decoration: none; border: 1px solid var(--gold); padding: 5px 10px; border-radius: 5px; font-weight: bold; background: rgba(255,204,0,0.1); }
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: var(--dark); 
+            color: white; 
+            overflow: hidden; 
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* =============== TIENDA (FACHADA) =============== */
+        #store { 
+            height: 100vh; 
+            overflow-y: auto; 
+            padding: 25px 20px; 
+            text-align: center;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1010 100%);
+        }
+        
+        .store-header {
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .store-title {
+            font-size: 2em;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, var(--gold) 0%, #fff 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            font-weight: bold;
+            margin: 0;
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+        
+        .store-subtitle {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 8px;
+            letter-spacing: 2px;
+        }
+        
+        .grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 18px; 
+            max-width: 500px; 
+            margin: 0 auto; 
+        }
+        
+        .card { 
+            background: linear-gradient(135deg, var(--card-bg) 0%, #252525 100%);
+            padding: 25px 20px; 
+            border-radius: 16px; 
+            border: 2px solid #2a2a2a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 4s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .card:active {
+            transform: scale(0.95);
+            border-color: var(--gold);
+        }
+        
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+        }
+        
+        .card-amount {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        
+        .buy-btn { 
+            background: linear-gradient(135deg, var(--blood) 0%, #cc0000 100%);
+            border: none; 
+            color: white; 
+            width: 100%; 
+            margin-top: 12px; 
+            padding: 12px; 
+            border-radius: 10px; 
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .buy-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+        }
+
+        /* =============== MODALES =============== */
+        .overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.95); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center; 
+            backdrop-filter: blur(20px);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .win { 
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2510 100%);
+            padding: 35px 30px; 
+            border-radius: 25px; 
+            border: 3px solid var(--gold);
+            width: 85%; 
+            max-width: 380px; 
+            text-align: center;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.4), inset 0 0 30px rgba(255, 215, 0, 0.1);
+            animation: modalPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        @keyframes modalPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .win h2, .win h3 {
+            color: var(--gold);
+            margin: 0 0 20px 0;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            font-size: 1.8em;
+            letter-spacing: 2px;
+        }
+        
+        input[type="text"] { 
+            width: 100%; 
+            padding: 15px; 
+            margin: 12px 0; 
+            background: rgba(0,0,0,0.6); 
+            border: 2px solid #444; 
+            color: var(--gold); 
+            border-radius: 12px; 
+            text-align: center; 
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .modal-btn {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            color: #000;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        .modal-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.4);
+        }
+
+        /* =============== CHAT NEXUS =============== */
+        #nexus { 
+            display: none; 
+            height: 100vh; 
+            flex-direction: column; 
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1010 100%);
+        }
+        
+        header { 
+            padding: 18px 20px; 
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2510 100%);
+            border-bottom: 2px solid var(--gold);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(255, 215, 0, 0.2);
+            position: relative;
+            z-index: 100;
+        }
+        
+        .header-title {
+            color: var(--gold);
+            font-weight: bold;
+            font-size: 1.2em;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        #online {
+            color: #0f0;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+        
+        #typing {
+            font-size: 0.75em;
+            color: #999;
+            font-style: italic;
+        }
+        
+        #chat-area { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px;
+            padding-bottom: 10px;
+        }
+        
+        /* Barra de scroll personalizada */
+        #chat-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #chat-area::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+        }
+        
+        #chat-area::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 3px;
+        }
+        
+        .m { 
+            padding: 14px 16px; 
+            border-radius: 18px; 
+            max-width: 82%; 
+            position: relative; 
+            background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+            align-self: flex-start; 
+            border: 1px solid #333;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            animation: messageSlide 0.3s ease;
+        }
+        
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .m-admin { 
+            border-left: 4px solid var(--gold); 
+            background: linear-gradient(135deg, #2d2510 0%, #3a2f15 100%);
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+        
+        .m img { 
+            max-width: 100%; 
+            border-radius: 12px; 
+            margin-top: 10px; 
+            display: block; 
+            border: 2px solid #444;
+        }
+        
+        .u-name { 
+            font-size: 0.8em; 
+            font-weight: bold; 
+            margin-bottom: 6px; 
+            display: block; 
+            color: var(--gold);
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+        }
+        
+        .dl-btn { 
+            display: inline-block; 
+            margin-top: 12px; 
+            color: var(--gold); 
+            font-size: 0.8em; 
+            text-decoration: none; 
+            border: 2px solid var(--gold); 
+            padding: 8px 14px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            background: rgba(255,204,0,0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .dl-btn:active {
+            background: rgba(255,204,0,0.3);
+            transform: scale(0.95);
+        }
         
         /* REACCIONES */
-        .reac-bar { display: none; position: absolute; top: -35px; right: 0; background: #333; border-radius: 20px; padding: 5px 12px; gap: 10px; z-index: 10; border: 1px solid #555; }
-        .m:active .reac-bar { display: flex; }
+        .reac-bar { 
+            display: none; 
+            position: absolute; 
+            top: -40px; 
+            right: 0; 
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            border-radius: 25px; 
+            padding: 8px 16px; 
+            gap: 12px; 
+            z-index: 10; 
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .m:active .reac-bar { 
+            display: flex; 
+        }
+        
+        .reac-bar span {
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .reac-bar span:active {
+            transform: scale(1.3);
+        }
 
-        /* ANIMACIÓN ADMIN */
-        .part { position: fixed; bottom: 0; width: 4px; height: 4px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 2000; animation: up 2s linear forwards; }
-        @keyframes up { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-100vh); opacity: 0; } }
+        /* =============== INPUT DE MENSAJES =============== */
+        .input-container {
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2510 100%);
+            border-top: 2px solid var(--gold);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 -2px 15px rgba(255, 215, 0, 0.2);
+            position: relative;
+            z-index: 100;
+        }
+        
+        .input-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            animation: borderGlow 2s infinite;
+        }
+        
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .img-btn {
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            border: 2px solid var(--gold);
+            font-size: 1.5em;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+        
+        .img-btn:active {
+            transform: scale(0.9);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        #msg {
+            margin: 0;
+            flex: 1;
+            padding: 14px;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid #444;
+            color: white;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        #msg:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, var(--blood) 0%, #cc0000 100%);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+            min-width: 80px;
+        }
+        
+        .send-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        /* =============== PARTÍCULAS MEJORADAS =============== */
+        .particle { 
+            position: fixed; 
+            pointer-events: none; 
+            z-index: 2000;
+            animation: particleFloat 3s ease-out forwards;
+        }
+        
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-50vh) scale(1.2) rotate(180deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100vh) scale(0.5) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Tipos de partículas */
+        .particle-coin {
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle, var(--gold) 0%, var(--gold-dark) 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: particleFloat 2.5s ease-out forwards, coinSpin 1s linear infinite;
+        }
+        
+        @keyframes coinSpin {
+            0%, 100% { transform: scaleX(1); }
+            50% { transform: scaleX(0.3); }
+        }
+        
+        .particle-star {
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            filter: drop-shadow(0 0 10px var(--gold));
+            animation: particleFloat 3s ease-out forwards, starTwinkle 1s ease-in-out infinite;
+        }
+        
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+        
+        .particle-sparkle {
+            width: 15px;
+            height: 15px;
+            background: radial-gradient(circle, #fff 0%, var(--gold) 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+            animation: particleFloat 2s ease-out forwards, sparkleGlow 0.5s ease-in-out infinite;
+        }
+        
+        @keyframes sparkleGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 255, 255, 1); }
+        }
+        
+        .particle-diamond {
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(135deg, var(--gold) 0%, #fff 50%, var(--gold) 100%);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+            animation: particleFloat 2.8s ease-out forwards, diamondShine 1.5s linear infinite;
+        }
+        
+        @keyframes diamondShine {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 10px rgba(255, 215, 0, 0.6)); }
+            50% { filter: brightness(1.5) drop-shadow(0 0 20px rgba(255, 215, 0, 1)); }
+        }
+
+        /* =============== DECORACIONES ADICIONALES =============== */
+        .gold-corner {
+            position: fixed;
+            width: 80px;
+            height: 80px;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.3;
+        }
+        
+        .gold-corner-tl {
+            top: 0;
+            left: 0;
+            border-top: 3px solid var(--gold);
+            border-left: 3px solid var(--gold);
+        }
+        
+        .gold-corner-tr {
+            top: 0;
+            right: 0;
+            border-top: 3px solid var(--gold);
+            border-right: 3px solid var(--gold);
+        }
+        
+        .gold-corner-bl {
+            bottom: 0;
+            left: 0;
+            border-bottom: 3px solid var(--gold);
+            border-left: 3px solid var(--gold);
+        }
+        
+        .gold-corner-br {
+            bottom: 0;
+            right: 0;
+            border-bottom: 3px solid var(--gold);
+            border-right: 3px solid var(--gold);
+        }
     </style>
 </head>
 <body ontouchstart="checkGesto(event)">
 
+    <!-- DECORACIONES DE ORO -->
+    <div class="gold-corner gold-corner-tl"></div>
+    <div class="gold-corner gold-corner-tr"></div>
+    <div class="gold-corner gold-corner-bl"></div>
+    <div class="gold-corner gold-corner-br"></div>
+
     <!-- TIENDA (PANTALLA INICIAL) -->
     <div id="store">
-        <h2 style="letter-spacing: 2px;">GOLD TOP-UP</h2>
+        <div class="store-header">
+            <h1 class="store-title">⚡ RECARGA DE ORO ⚡</h1>
+            <p class="store-subtitle">BLOOD STRIKE OFICIAL</p>
+        </div>
         <div class="grid">
-            <div class="card">💰 100 Gold<br><button class="buy-btn">$0.99</button></div>
-            <div class="card">💰 500 Gold<br><button class="buy-btn">$4.99</button></div>
-            <div class="card">💰 1200 Gold<br><button class="buy-btn">$9.99</button></div>
-            <div class="card">💰 2500 Gold<br><button class="buy-btn">$19.99</button></div>
+            <div class="card">
+                <div class="card-icon">💰</div>
+                <div class="card-amount">100 ORO</div>
+                <button class="buy-btn">$0.99</button>
+            </div>
+            <div class="card">
+                <div class="card-icon">💰</div>
+                <div class="card-amount">500 ORO</div>
+                <button class="buy-btn">$4.99</button>
+            </div>
+            <div class="card">
+                <div class="card-icon">💰</div>
+                <div class="card-amount">1200 ORO</div>
+                <button class="buy-btn">$9.99</button>
+            </div>
+            <div class="card">
+                <div class="card-icon">💰</div>
+                <div class="card-amount">2500 ORO</div>
+                <button class="buy-btn">$19.99</button>
+            </div>
+            <div class="card">
+                <div class="card-icon">💎</div>
+                <div class="card-amount">5000 ORO</div>
+                <button class="buy-btn">$39.99</button>
+            </div>
+            <div class="card">
+                <div class="card-icon">👑</div>
+                <div class="card-amount">10000 ORO</div>
+                <button class="buy-btn">$74.99</button>
+            </div>
         </div>
     </div>
 
     <!-- MODAL DE ACCESO (GESTO 2 DEDOS) -->
-    <div id="modal-lock" class="overlay">
-        <div class="win">
-            <h2 style="color:var(--gold)">NEXUS CORE</h2>
-            <input type="text" id="pass-key" placeholder="CLAVE DE ACCESO">
-            <button onclick="validar()" style="background:var(--gold); border:none; padding:12px 25px; border-radius:8px; font-weight:bold; cursor:pointer;">ACCEDER</button>
-        </div>
-    </div>
-
-    <!-- CONFIGURACIÓN DE PERFIL -->
-    <div id="modal-profile" class="overlay">
-        <div class="win">
-            <h3>PERFIL DE USUARIO</h3>
-            <input type="text" id="user-alias" placeholder="TU APODO">
-            <button onclick="conectar()" style="background:var(--gold); border:none; padding:12px 25px; border-radius:8px; font-weight:bold; cursor:pointer;">INICIAR PROTOCOLO</button>
-        </div>
-    </div>
-
-    <!-- APLICACIÓN DE CHAT REAL -->
-    <div id="nexus">
-        <header>
-            <div style="color:var(--gold); font-weight:bold;">NEXUS HUB <span id="online" style="color:#0f0; font-size:0.7em;">● 0</span></div>
-            <div id="typing" style="font-size:0.7em; color:#666;"></div>
-        </header>
-        <div id="chat-area"></div>
-        <div style="padding:15px; background:#111; border-top:1px solid #222; display:flex; gap:10px; align-items:center;">
-            <button onclick="document.getElementById('img-up').click()" style="background:none; border:none; font-size:1.5em; cursor:pointer;">🖼️</button>
-            <input type="file" id="img-up" accept="image/*" style="display:none" onchange="subirImg(event)">
-            <input type="text" id="msg" placeholder="Mensaje..." oninput="handleTyping()" style="margin:0; flex:1;">
-            <button onclick="send()" style="background:var(--blood); border:none; padding:10px 15px; border-radius:5px; color:white; font-weight:bold;">ENVIAR</button>
-        </div>
-    </div>
-
-    <script>
-        // CONFIGURACIÓN DE FIREBASE[span_1](start_span)[span_1](end_span)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAzzRWHGhYVFgkWyRwfgNKc5Ql52U4xxM8",
-            authDomain: "hyper-drip.firebaseapp.com",
-            projectId: "hyper-drip",
-            storageBucket: "hyper-drip.firebasestorage.app",
-            messagingSenderId: "1023275797824",
-            appId: "1:1023275797824:web:378ce9a674db72af05fea5"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        let nick = localStorage.getItem('n_u') || "";
-        let isAdmin = false;
-        let tOut;
-
-        // Gesto Secreto: 2 dedos al mismo tiempo[span_2](start_span)[span_2](end_span)
-        function checkGesto(e) { 
-            if(e.touches.length === 2) {
-                document.getElementById('modal-lock').style.display = 'flex';
-            }
-        }
-
-        function validar() {
-            const k = document.getElementById('pass-key').value;
-            if(k === "XDD1018") { isAdmin = false; showProfile(); }
-            else if(k === "CHRISS PLUS") { isAdmin = true; showProfile(); }
-            else { document.getElementById('modal-lock').style.display = 'none'; }
-        }
-
-        function showProfile() {
-            document.getElementById('modal-lock').style.display = 'none';
-            document.getElementById('modal-profile').style.display = 'flex';
-            if(nick) document.getElementById('user-alias').value = nick;
-        }
-
-        function conectar() {
-            nick = document.getElementById('user-alias').value;
-            if(!nick) return;
-            localStorage.setItem('n_u', nick);
-            document.getElementById('modal-profile').style.display = 'none';
-            document.getElementById('store').style.display = 'none';
-            document.getElementById('nexus').style.display = 'flex';
-            iniciarChat();
-        }
-
-        function handleTyping() {
-            db.collection("status").doc(nick).set({ t: true });
-            clearTimeout(tOut);
-            tOut = setTimeout(() => db.collection("status").doc(nick).set({ t: false }), 2000);
-        }
-
-        function send() {
-            const m = document.getElementById('msg').value;
-            if(!m) return;
-            db.collection("chat_bs").add({ 
-                u: nick, 
-                t: m, 
-                a: isAdmin, 
-                time: firebase.firestore.FieldValue.serverTimestamp() 
-            });
-            document.getElementById('msg').value = "";
-            if(isAdmin) launchParticles(); // Solo Admin activa la animación[span_3](start_span)[span_3](end_span)
-        }
-
-        function subirImg(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                db.collection("chat_bs").add({ 
-                    u: nick, 
-                    img: ev.target.result, 
-                    a: isAdmin, 
-                    time: firebase.firestore.FieldValue.serverTimestamp() 
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function launchParticles() {
-            for(let i=0; i<30; i++) {
-                const p = document.createElement('div');
-                p.className = 'part';
-                p.style.left = Math.random() * 100 + "vw";
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 2000);
-            }
-        }
-
-        function iniciarChat() {
-            // Escucha de mensajes en tiempo real[span_4](start_span)[span_4](end_span)
-            db.collection("chat_bs").orderBy("time", "asc").onSnapshot(snap => {
-                const area = document.getElementById('chat-area');
-                area.innerHTML = "";
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    const div = document.createElement('div');
-                    div.className = `m ${d.a ? 'm-admin' : ''}`;
-                    
-                    let content = `<div class="reac-bar">🔥 ❤️ 👍</div>`;
-                    content += `<span class="u-name">${d.u}${d.a ? ' 👑' : ''}</span>`;
-                    if(d.t) content += `<span>${d.t}</span>`;
-                    
-                    if(d.img) {
-                        content += `<img src="${d.img}">`;
-                        // Lógica de descarga exclusiva para el administrador[span_5](start_span)[span_5](end_span)
-                        if(isAdmin) {
-                            content += `<a href="${d.img}" download="NEXUS_${Date.now()}.png" class="dl-btn">⬇️ DESCARGAR ARCHIVO</a>`;
-                        }
-                    }
-                    
-                    div.innerHTML = content;
-                    area.appendChild(div);
-                });
-                area.scrollTop = area.scrollHeight;
-            });
-
-            // Estado de usuarios Online y Escritura[span_6](start_span)[span_6](end_span)
-            db.collection("status").onSnapshot(snap => {
-                let on = 0; let typingUsers = [];
-                snap.forEach(doc => { 
-                    on++; 
-                    if(doc.data().t && doc.id !== nick) typingUsers.push(doc.id); 
-                });
-                document.getElementById('online').innerText = `● ${on}`;
-                document.getElementById('typing').innerText = typingUsers.length > 0 ? "Alguien está escribiendo..." : "";
-            });
-        }
-    </script>
-</body>
-</html>
+ 
