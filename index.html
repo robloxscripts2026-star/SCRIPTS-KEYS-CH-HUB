@@ -1,242 +1,295 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Cruda Realidad - Experiencia Inmersiva</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@200;400;600&display=swap');
+    <title>Blood Strike - Gold Store</title>
+    
+    <!-- Scripts de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+    <style>
+        :root {
+            --gold: #ffcc00;
+            --dark: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --blood-red: #cc0000;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--dark);
+            color: white;
+            overflow-x: hidden;
         }
 
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+        /* --- TIENDA FINGIDA --- */
+        #fake-store { padding: 20px; text-align: center; }
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .item-card {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px;
             text-align: center;
+        }
+        .gold-amount { color: var(--gold); font-weight: bold; font-size: 1.2em; }
+        .buy-btn {
+            background: var(--blood-red);
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            width: 100%;
             cursor: pointer;
         }
 
-        /* Fondo Animado */
-        #canvas-wrap {
+        /* --- MODALES --- */
+        .overlay {
+            display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #2b0000 0%, #000 80%);
-            z-index: -1;
-        }
-
-        .blood-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(0deg, rgba(255, 0, 0, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-            animation: breathe 4s infinite alternate;
-        }
-
-        @keyframes breathe {
-            from { opacity: 0.3; }
-            to { opacity: 0.7; }
-        }
-
-        .container {
-            width: 90%;
-            max-width: 800px;
-            z-index: 10;
-        }
-
-        h1 {
-            font-family: 'Cinzel', serif;
-            color: #ff1a1a;
-            font-size: 1rem;
-            letter-spacing: 8px;
-            margin-bottom: 60px;
-            text-shadow: 0 0 20px #ff0000;
-            opacity: 0.8;
-        }
-
-        #lyrics-container {
-            height: 300px;
-            display: flex;
-            align-items: center;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
             justify-content: center;
-            position: relative;
+            align-items: center;
         }
-
-        .lyric {
-            position: absolute;
+        .window {
+            background: #222;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid var(--gold);
+            width: 85%;
+            max-width: 350px;
+            text-align: center;
+        }
+        input {
             width: 100%;
-            font-size: 1.5rem;
-            font-weight: 200;
-            line-height: 1.8;
-            opacity: 0;
-            transform: scale(0.8) translateY(30px);
-            filter: blur(15px);
-            transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
-            padding: 0 20px;
+            padding: 12px;
+            margin: 10px 0;
+            background: #111;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 8px;
+            box-sizing: border-box;
         }
 
-        .lyric.active {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-            filter: blur(0px);
+        /* --- CHAT REAL --- */
+        #main-app {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+            background: #0f0f0f;
         }
-
-        .emphasize {
-            color: #ff1a1a;
-            font-weight: 600;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-        }
-
-        .subtext {
-            display: block;
-            font-size: 0.9rem;
-            margin-top: 15px;
-            color: #888;
-            font-style: italic;
-        }
-
-        #intro-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
+        header { background: #1a1a1a; padding: 15px; border-bottom: 1px solid #333; text-align: center; color: var(--gold); font-weight: bold; }
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            transition: opacity 1.5s;
+            gap: 12px;
+        }
+        .msg {
+            background: #262626;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 85%;
+            align-self: flex-start;
+        }
+        .msg.admin-msg { border-left: 4px solid var(--gold); background: #2d2a1e; }
+        .msg strong { color: var(--gold); font-size: 0.9em; display: block; }
+        .msg img { max-width: 100%; border-radius: 8px; margin-top: 8px; border: 1px solid #444; }
+        
+        /* Estilo del botón de descarga solo para Admin */
+        .download-btn { 
+            display: inline-block; 
+            margin-top: 8px; 
+            color: var(--gold); 
+            font-size: 0.75em; 
+            text-decoration: none; 
+            border: 1px solid var(--gold);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
         }
 
-        .heart-icon {
-            font-size: 5rem;
-            color: #ff1a1a;
-            cursor: pointer;
-            animation: heartbeat 1.5s infinite;
-            filter: drop-shadow(0 0 20px #ff1a1a);
-            background: none;
-            border: none;
-        }
-
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            15% { transform: scale(1.15); }
-            30% { transform: scale(1); }
-            45% { transform: scale(1.25); }
-            70% { transform: scale(1); }
-        }
-
-        .hint-text {
-            margin-top: 30px;
-            font-size: 0.7rem;
-            letter-spacing: 3px;
-            color: #444;
-            text-transform: uppercase;
-        }
-
-        #tap-indicator {
-            position: fixed;
-            bottom: 40px;
-            font-size: 0.6rem;
-            color: #333;
-            letter-spacing: 2px;
-            opacity: 0;
-            transition: opacity 2s;
-        }
+        .input-area { background: #1a1a1a; padding: 15px; display: flex; gap: 10px; align-items: center; }
     </style>
 </head>
-<body>
+<body ontouchstart="checkGesto(event)">
 
-    <div id="canvas-wrap">
-        <div class="blood-overlay"></div>
-    </div>
-
-    <div id="intro-screen">
-        <button class="heart-icon" id="start-btn">❤️‍🩹</button>
-        <p class="hint-text">Siente la historia</p>
-    </div>
-
-    <div class="container">
-        <h1>LA CRUDA REALIDAD</h1>
-        
-        <div id="lyrics-container">
-            <div class="lyric active">Todo empezó con una pregunta simple... <span class="subtext">A veces las respuestas más crueles vienen de lo más cotidiano.</span></div>
-            <div class="lyric">"¿Juegas Blood?" 🎮</div>
-            <div class="lyric">Su respuesta fue el inicio del fin: <span class="emphasize">"No, pero sí juego..."</span></div>
-            <div class="lyric">"¿Y qué juegas?" pregunté, sin saber que me disparaba al corazón.</div>
-            <div class="lyric">"Juego con tus sentimientos..." 💔 <span class="subtext">Esa frase se quedó grabada en el silencio.</span></div>
-            <div class="lyric">"Nunca quise algo serio contigo"</div>
-            <div class="lyric">"No te quería..." <span class="emphasize">"...pero tampoco te quería dejar ir"</span> 🥀</div>
-            <div class="lyric">Ahí me di cuenta de la verdad: nunca hubo un "nosotros".</div>
-            <div class="lyric">Solo era un juego de indecisiones donde yo ponía el alma.</div>
-            <div class="lyric">Nunca quiso expresar lo que sentía, porque no sentía nada.</div>
-            <div class="lyric">No me quería, pero amaba el poder de no perderme.</div>
-            <div class="lyric">Duele saber que cada beso, cada "te quiero"... <span class="emphasize">no significó nada para ella.</span></div>
-            <div class="lyric">Y aunque el mundo me diga que la olvide, mi corazón aún no sabe cómo.</div>
-            <div class="lyric">Porque yo sí la amaba, con la verdad por delante. 😔</div>
-            <div class="lyric">Duele ver el vacío, pero hubiera dolido más una mentira eterna.</div>
-            <div class="lyric">A veces cuesta olvidar... <span class="emphasize">pero el amor no tiene un interruptor.</span> 💡</div>
-            <div class="lyric">No puedes apagar lo que encendiste con tanta ilusión.</div>
-            <div class="lyric">Te va a tomar tiempo... días grises y noches largas.</div>
-            <div class="lyric">Recordando a esa persona que te hacía sentir <span class="emphasize">invencible</span>. ✨</div>
-            <div class="lyric">¿Realmente extrañas a tu ex? <span class="subtext">O extrañas quién eras tú cuando estabas con ella...</span></div>
-            <div class="lyric">Olvidar los detalles es lo más difícil.</div>
-            <div class="lyric">Esa carta guardada en el cajón... 📝</div>
-            <div class="lyric">Ese beso que te reiniciaba el mundo... 💋</div>
-            <div class="lyric">O esa rosa que se secó, igual que lo nuestro. 🌹</div>
-            <div class="lyric">Por más mínimos que fueran, eran gigantes para mí.</div>
-            <div class="lyric">Hoy solo queda el eco de lo que pudo ser.</div>
-            <div class="lyric">Sanar no es olvidar, es recordar sin que queme. 🔥</div>
-            <div class="lyric">Tómate tu tiempo. <span class="emphasize">Vas a volver a brillar.</span> ❤️</div>
-            <div class="lyric">Fin de la historia. 🥀</div>
+    <!-- FACHADA -->
+    <div id="fake-store">
+        <h1 style="color:var(--blood-red)">BLOOD STRIKE STORE</h1>
+        <div class="store-grid">
+            <script>
+                const packs = [100, 320, 600, 1200, 3800, 4000, 5000, 6320];
+                packs.forEach(p => {
+                    document.write(`
+                        <div class="item-card">
+                            <div style="font-size:2em">💰</div>
+                            <div class="gold-amount">${p} Oro</div>
+                            <button class="buy-btn">COMPRAR</button>
+                        </div>
+                    `);
+                });
+            </script>
         </div>
     </div>
 
-    <p id="tap-indicator">Toca para sumergirte más...</p>
+    <!-- MODAL 1: CONTRASEÑA -->
+    <div id="modal-pass" class="overlay">
+        <div class="window">
+            <h3>SISTEMA NEXUS</h3>
+            <input type="password" id="input-pass" placeholder="Contraseña de acceso">
+            <button onclick="validarClave()" class="buy-btn" style="background:var(--gold); color:black">ENTRAR</button>
+        </div>
+    </div>
 
-    <audio id="bg-audio" src="https://files.catbox.moe/olgwf0.mp3"></audio>
+    <!-- MODAL 2: IDENTIDAD -->
+    <div id="modal-user" class="overlay">
+        <div class="window">
+            <h3 id="user-status">NOMBRE:</h3>
+            <input type="text" id="input-name" placeholder="Tu alias...">
+            <button onclick="entrarAlChat()" class="buy-btn" style="background:var(--gold); color:black">CONECTAR</button>
+        </div>
+    </div>
+
+    <!-- CHAT EN TIEMPO REAL -->
+    <div id="main-app">
+        <header id="chat-header">CONECTANDO...</header>
+        <div id="chat-box"></div>
+        <div class="input-area">
+            <button onclick="document.getElementById('img-file').click()" style="background:none; border:none; font-size:1.5em; cursor:pointer">🖼️</button>
+            <input type="file" id="img-file" accept="image/*" style="display:none" onchange="subirImagen(event)">
+            <input type="text" id="msg-input" placeholder="Escribe un mensaje...">
+            <button onclick="enviarTexto()" class="buy-btn" style="margin:0; width:auto">ENVIAR</button>
+        </div>
+    </div>
 
     <script>
-        const startBtn = document.getElementById('start-btn');
-        const intro = document.getElementById('intro-screen');
-        const audio = document.getElementById('bg-audio');
-        const lyrics = document.querySelectorAll('.lyric');
-        const tapId = document.getElementById('tap-indicator');
-        let step = 0;
-        let canAdvance = false;
+        // CONFIGURACIÓN FIREBASE (TUS DATOS)[span_1](start_span)[span_1](end_span)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzzRWHGhYVFgkWyRwfgNKc5Ql52U4xxM8",
+            authDomain: "hyper-drip.firebaseapp.com",
+            projectId: "hyper-drip",
+            storageBucket: "hyper-drip.firebasestorage.app",
+            messagingSenderId: "1023275797824",
+            appId: "1:1023275797824:web:378ce9a674db72af05fea5"
+        };
 
-        startBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            intro.style.opacity = '0';
-            setTimeout(() => {
-                intro.style.display = 'none';
-                tapId.style.opacity = '1';
-            }, 1500);
-            audio.play();
-            canAdvance = true;
-        });
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        let nickname = localStorage.getItem('nexus_user') || "";
+        let esAdmin = false;
 
-        document.body.addEventListener('click', () => {
-            if (!canAdvance || step >= lyrics.length - 1) return;
-            
-            lyrics[step].classList.remove('active');
-            step++;
-            lyrics[step].classList.add('active');
-            
-            // Efecto de pulso en el fondo al tocar
-            document.querySelector('.blood-overlay').style.animation = 'none';
-            document.querySelector('.blood-overlay').offsetHeight; 
-            document.querySelector('.blood-overlay').style.animation = 'breathe 0.5s ease';
-        });
+        // Gesto: 2 Dedos simultáneos[span_2](start_span)[span_2](end_span)
+        function checkGesto(e) {
+            if (e.touches.length === 2) {
+                document.getElementById('modal-pass').style.display = 'flex';
+            }
+        }
+
+        function validarClave() {
+            const clave = document.getElementById('input-pass').value;
+            if (clave === "XDD1018") {
+                esAdmin = false;
+                pedirNombre();
+            } else if (clave === "CHRISS PLUS") {
+                esAdmin = true;
+                pedirNombre();
+            } else {
+                alert("Clave incorrecta");
+            }
+        }
+
+        function pedirNombre() {
+            document.getElementById('modal-pass').style.display = 'none';
+            document.getElementById('modal-user').style.display = 'flex';
+            if (nickname) {
+                document.getElementById('user-status').innerText = "BIENVENIDO, " + nickname.toUpperCase();
+                document.getElementById('input-name').value = nickname;
+            }
+        }
+
+        function entrarAlChat() {
+            const n = document.getElementById('input-name').value;
+            if (n) {
+                nickname = n;
+                localStorage.setItem('nexus_user', n);
+                document.getElementById('modal-user').style.display = 'none';
+                document.getElementById('fake-store').style.display = 'none';
+                document.getElementById('main-app').style.display = 'flex';
+                document.getElementById('chat-header').innerText = `MODO: ${esAdmin ? 'ADMINISTRADOR 👑' : 'USUARIO'}`;
+                iniciarEscucha();
+            }
+        }
+
+        function enviarTexto() {
+            const inp = document.getElementById('msg-input');
+            if (!inp.value) return;
+            db.collection("chat_bs").add({
+                u: nickname,
+                t: inp.value,
+                a: esAdmin,
+                time: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            inp.value = "";
+        }
+
+        function subirImagen(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    db.collection("chat_bs").add({
+                        u: nickname,
+                        img: ev.target.result,
+                        a: esAdmin,
+                        time: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function iniciarEscucha() {
+            db.collection("chat_bs").orderBy("time", "asc").onSnapshot(snap => {
+                const box = document.getElementById('chat-box');
+                box.innerHTML = "";
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `msg ${d.a ? 'admin-msg' : ''}`;
+                    
+                    let content = `<strong>${d.u}${d.a ? ' 👑' : ''}</strong>`;
+                    if (d.t) content += `<span>${d.t}</span>`;
+                    
+                    if (d.img) {
+                        content += `<img src="${d.img}">`;
+                        // LÓGICA CLAVE: Solo el Admin actual puede ver el botón de descarga[span_3](start_span)[span_3](end_span)
+                        if (esAdmin) {
+                            content += `<a href="${d.img}" download="NEXUS_${Date.now()}.png" class="download-btn">⬇️ DESCARGAR (ADMIN)</a>`;
+                        }
+                    }
+                    
+                    msgDiv.innerHTML = content;
+                    box.appendChild(msgDiv);
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
     </script>
 </body>
 </html>
